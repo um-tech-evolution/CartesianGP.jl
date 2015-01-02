@@ -1,5 +1,10 @@
 using CGP
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+function getparameters()
+    return default_parameters(3, 3, 9, 2, 3, 1)
+end
+
+funcs = default_funcs()
+parameters = getparameters()
+chromosome = random_chromosome(parameters, funcs)

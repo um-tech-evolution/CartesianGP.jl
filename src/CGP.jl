@@ -1,15 +1,14 @@
 module CGP
 
+export Func, default_funcs, Parameters, default_parameters, InputNode, InteriorNode, blank_chromosome, random_chromosome
+
 type Func
     func::Function
     maxinputs::Integer
 end
 
-type Node
-    func::Integer
-    inputs::Vector{Integer}
-    active::Bool
-    output::Uint64
+function default_funcs()
+    return [Func(+, 2), Func(-, 2)]
 end
 
 immutable Parameters
@@ -27,23 +26,48 @@ immutable Parameters
     levelsback::Integer
 end
 
-type Chromosome
-    nodes::Vector{Node}
-    fitness::FloatingPoint
+function default_parameters(numinputs, numoutputs, numnodes, nodearity, numlevels, levelsback)
+    mu = 1
+    lambda = 4
+    mutrate = 0.05
+    targetfitness = 0.0
+
+    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numnodes, nodearity, numlevels, levelsback)
 end
 
-function random_node(p::Parameters, funcs::Vector{Func}, index::Integer)
+abstract Node
+
+type InputNode <: Node
+    index::Integer
+end
+
+function blank_input(index::Integer)
+    return InputNode(index)
+end
+
+type InteriorNode <: Node
+    func::Func
+    inputs::Vector{Node}
+    active::Bool
+    output::Uint64
+end
+
+function random_node(p::Parameters, funcs::Vector{Func}, inputs::Vector{InputNode}, nodes::Vector{InteriorNode}, index::Integer)
     perlevel = (p.numnodes / p.numlevels)
-    func = rand(1:funcs)
+    func = funcs[rand(1:end)]
     level = div(index - 1, perlevel) + 1
-    inputs = map(1:p.nodearity) do j
-        if level == 1
-            # First level, choose from inputs
-            rand(1:p.numinputs)::Integer
+    firstlevel = max(level - p.levelsback, 0)
+    start = ifelse(firstlevel == 0, -p.numinputs + 1, (firstlevel - 1) * perlevel + 1)
+    stop = (level - 1) * perlevel
+    
+    nodeinputs = Array(Node, p.nodearity)
+    for i = 1:length(nodeinputs)
+        src = rand(start:stop)
+        if src < 1
+            # Chose an input
+            nodeinputs[i] = inputs[-src + 1]
         else
-            start = (level - 1 - p.levelsback) * perlevel + 1
-            stop = (level - 1) * perlevel
-            rand(start:stop)::Integer
+            nodeinputs[i] = nodes[src]
         end
     end
 
@@ -51,18 +75,34 @@ function random_node(p::Parameters, funcs::Vector{Func}, index::Integer)
     active = true
     output = 0
 
-    return Node(func, inputs, active, output)
+    return InteriorNode(func, nodeinputs, active, output)
+end
+
+type Chromosome
+    inputs::Vector{InputNode}
+    nodes::Vector{InteriorNode}
+    fitness::FloatingPoint
 end
 
 function blank_chromosome(p::Parameters)
-    nodes = Vector(Node, p.numnodes)
+    inputs = Array(InputNode, p.numinputs)
+    nodes = Array(InteriorNode, p.numnodes)
     fitness = 0.0
-    return Chromosome(nodes, fitness)
+    return Chromosome(inputs, nodes, fitness)
 end
 
 function random_chromosome(p::Parameters, funcs::Vector{Func})
     chromosome = blank_chromosome(p)
-    nodes = map(i -> random_node(p, funcs, i), 1:p.numnodes)
-    chromosome.nodes = nodes
+
+    for i = 1:length(chromosome.inputs)
+        chromosome.inputs[i] = blank_input(i)
+    end
+
+    for i = 1:length(chromosome.nodes)
+        chromosome.nodes[i] = random_node(p, funcs, chromosome.inputs, chromosome.nodes, i)
+    end
+
+    return chromosome
 end
 
+end
