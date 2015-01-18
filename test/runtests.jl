@@ -1,10 +1,16 @@
 using CGP
 using Base.Test
 
-function getparameters()
-    return default_parameters(3, 3, 9, 2, 3, 1)
-end
+const numinputs = 2
+const numoutputs = 1
+const nodearity = 2
+const numperlevel = 1
+const numlevels = 10
+const numlevelsback = 10
 
 funcs = default_funcs()
-parameters = getparameters()
+parameters = default_parameters(numinputs, numoutputs, nodearity,
+                                numperlevel, numlevels, numlevelsback)
 chromosome = random_chromosome(parameters, funcs)
+result = execute_chromosome(chromosome, [true, false])
+println(result)
