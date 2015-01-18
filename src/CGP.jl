@@ -1,39 +1,9 @@
 module CGP
 
-export Func, default_funcs, Parameters, default_parameters, InputNode, InteriorNode, blank_chromosome, random_chromosome
+include("Func.jl")
+include("Parameters.jl")
 
-type Func
-    func::Function
-    maxinputs::Integer
-end
-
-function default_funcs()
-    return [Func(+, 2), Func(-, 2)]
-end
-
-immutable Parameters
-    mu::Integer
-    lambda::Integer
-    mutrate::FloatingPoint
-    targetfitness::FloatingPoint
-
-    numinputs::Integer
-    numoutputs::Integer
-    numnodes::Integer
-    nodearity::Integer
-
-    numlevels::Integer
-    levelsback::Integer
-end
-
-function default_parameters(numinputs, numoutputs, numnodes, nodearity, numlevels, levelsback)
-    mu = 1
-    lambda = 4
-    mutrate = 0.05
-    targetfitness = 0.0
-
-    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numnodes, nodearity, numlevels, levelsback)
-end
+export InputNode, InteriorNode, blank_chromosome, random_chromosome, execute_chromosome
 
 abstract Node
 
