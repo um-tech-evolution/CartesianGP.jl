@@ -9,6 +9,7 @@ abstract Node
 
 type InputNode <: Node
     index::Integer
+    active::Bool
 end
 
 type InteriorNode <: Node
@@ -44,10 +45,11 @@ function random_node(p::Parameters, funcs::Vector{Func}, chrom::Chromosome, inde
         else
             nodeinputs[i] = chrom.nodes[src]
         end
+        nodeinputs[i].active = true
     end
 
     # Defaults
-    active = true
+    active = false
 
     return InteriorNode(func, nodeinputs, active)
 end
@@ -65,6 +67,7 @@ function random_output(p::Parameters, chrom::Chromosome)
     else
         input = chrom.nodes[src]
     end
+    input.active = true
 
     return OutputNode(input)
 end
@@ -81,7 +84,7 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
     chromosome = blank_chromosome(p)
 
     for i = 1:length(chromosome.inputs)
-        chromosome.inputs[i] = InputNode(i)
+        chromosome.inputs[i] = InputNode(i, false)
     end
 
     for i = 1:length(chromosome.nodes)
