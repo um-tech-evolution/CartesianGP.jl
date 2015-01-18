@@ -29,12 +29,11 @@ type Chromosome
 end
 
 function random_node(p::Parameters, funcs::Vector{Func}, chrom::Chromosome, index::Integer)
-    perlevel = (p.numnodes / p.numlevels)
     func = funcs[rand(1:end)]
-    level = div(index - 1, perlevel) + 1
-    firstlevel = max(level - p.levelsback, 0)
-    start = ifelse(firstlevel == 0, -p.numinputs + 1, (firstlevel - 1) * perlevel + 1)
-    stop = (level - 1) * perlevel
+    level = div(index - 1, p.numperlevel) + 1
+    firstlevel = max(level - p.numlevelsback, 0)
+    start = ifelse(firstlevel == 0, -p.numinputs + 1, (firstlevel - 1) * p.numperlevel + 1)
+    stop = (level - 1) * p.numperlevel
     
     nodeinputs = Array(Node, p.nodearity)
     for i = 1:length(nodeinputs)
@@ -53,12 +52,26 @@ function random_node(p::Parameters, funcs::Vector{Func}, chrom::Chromosome, inde
     return InteriorNode(func, nodeinputs, active)
 end
 
-function random_output(p::Parameters, nodes::Vector{InteriorNode})
+function random_output(p::Parameters, chrom::Chromosome)
+    level = p.numlevels + 1
+    firstlevel = max(p.numlevels - p.numlevelsback, 0)
+    start = ifelse(firstlevel == 0, -p.numinputs + 1, (firstlevel - 1) * p.numperlevel + 1)
+    stop = (level - 1) * p.numperlevel
+
+    src = rand(start:stop)
+    if src < 1
+        # Chose an input
+        input = chrom.inputs[-src + 1]
+    else
+        input = chrom.nodes[src]
+    end
+
+    return OutputNode(input)
 end
 
 function blank_chromosome(p::Parameters)
     inputs = Array(InputNode, p.numinputs)
-    nodes = Array(InteriorNode, p.numnodes)
+    nodes = Array(InteriorNode, p.numperlevel * p.numlevels)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
     return Chromosome(inputs, nodes, outputs, fitness)
@@ -75,23 +88,27 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
         chromosome.nodes[i] = random_node(p, funcs, chromosome, i)
     end
 
+    for i = 1:length(chromosome.outputs)
+        chromosome.outputs[i] = random_output(p, chromosome)
+    end
+
     return chromosome
 end
 
-function evaluate_node(node::InputNode, context::Vector{Integer})
+function evaluate_node(node::InputNode, context::Vector)
     return context[node.index]
 end
 
-function evaluate_node(node::InteriorNode, context::Vector{Integer})
+function evaluate_node(node::InteriorNode, context::Vector)
     func = node.func
-    return apply(func.func, [evaluate_node(n) for n = node.inputs[1:func.maxinputs]])
+    return apply(func.func, [evaluate_node(n, context) for n = node.inputs[1:func.arity]])
 end
 
-function evaluate_node(node::OutputNode, context::Vector{Integer})
+function evaluate_node(node::OutputNode, context::Vector)
     return evaluate_node(node.input, context)
 end
 
-function execute_chromosome(chromosome::Chromosome, context::Vector{Integer})
+function execute_chromosome(chromosome::Chromosome, context::Vector)
     return [evaluate_node(n, context) for n = chromosome.outputs]
 end
 
