@@ -11,12 +11,8 @@ const numlevelsback = 10
 funcs = default_funcs()
 p = Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
 
-srand(1)
-
 for _ = 1:100
     c = random_chromosome(p, funcs)
-    execute_chromosome(c, [true, true])
-    execute_chromosome(c, [true, false])
-    execute_chromosome(c, [false, true])
-    execute_chromosome(c, [false, false])
+    # Executing on these inputs tests all possible bit combinations for inputs
+    execute_chromosome(c, [0xC, 0xA])
 end
