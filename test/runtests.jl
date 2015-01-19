@@ -9,8 +9,12 @@ const numlevels = 10
 const numlevelsback = 10
 
 funcs = default_funcs()
-parameters = default_parameters(numinputs, numoutputs, nodearity,
-                                numperlevel, numlevels, numlevelsback)
-chromosome = random_chromosome(parameters, funcs)
-result = execute_chromosome(chromosome, [true, false])
-println(result)
+p = Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
+
+for _ = 1:100
+    c = random_chromosome(p, funcs)
+    execute_chromosome(c, [true, true])
+    execute_chromosome(c, [true, false])
+    execute_chromosome(c, [false, true])
+    execute_chromosome(c, [false, false])
+end

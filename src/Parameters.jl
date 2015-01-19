@@ -15,7 +15,7 @@ immutable Parameters
     numlevelsback::Integer
 end
 
-function default_parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
+function Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
     mu = 1
     lambda = 4
     mutrate = 0.05

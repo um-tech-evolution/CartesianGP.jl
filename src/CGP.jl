@@ -2,117 +2,78 @@ module CGP
 
 include("Func.jl")
 include("Parameters.jl")
+include("Node.jl")
+include("Chromosome.jl")
+include("Execute.jl")
 
-export InputNode, InteriorNode, blank_chromosome, random_chromosome, execute_chromosome
+export random_chromosome
 
-abstract Node
-
-type InputNode <: Node
-    index::Integer
-    active::Bool
-end
-
-type InteriorNode <: Node
-    func::Func
-    inputs::Vector{Node}
-    active::Bool
-end
-
-type OutputNode <: Node
-    input::Union(InputNode, InteriorNode)
-end
-
-type Chromosome
-    inputs::Vector{InputNode}
-    nodes::Vector{InteriorNode}
-    outputs::Vector{OutputNode}
-    fitness::FloatingPoint
-end
-
-function random_node(p::Parameters, funcs::Vector{Func}, chrom::Chromosome, index::Integer)
-    func = funcs[rand(1:end)]
-    level = div(index - 1, p.numperlevel) + 1
-    firstlevel = max(level - p.numlevelsback, 0)
-    start = ifelse(firstlevel == 0, -p.numinputs + 1, (firstlevel - 1) * p.numperlevel + 1)
-    stop = (level - 1) * p.numperlevel
-    
-    nodeinputs = Array(Node, p.nodearity)
-    for i = 1:length(nodeinputs)
-        src = rand(start:stop)
-        if src < 1
-            # Chose an input
-            nodeinputs[i] = chrom.inputs[-src + 1]
-        else
-            nodeinputs[i] = chrom.nodes[src]
-        end
-        nodeinputs[i].active = true
-    end
-
-    # Defaults
-    active = false
-
-    return InteriorNode(func, nodeinputs, active)
-end
-
-function random_output(p::Parameters, chrom::Chromosome)
-    level = p.numlevels + 1
-    firstlevel = max(p.numlevels - p.numlevelsback, 0)
-    start = ifelse(firstlevel == 0, -p.numinputs + 1, (firstlevel - 1) * p.numperlevel + 1)
-    stop = (level - 1) * p.numperlevel
-
-    src = rand(start:stop)
-    if src < 1
-        # Chose an input
-        input = chrom.inputs[-src + 1]
+function first_in_level(p::Parameters, level::Integer)
+    if level == 0
+        first = 1
     else
-        input = chrom.nodes[src]
+        first = p.numinputs + 1 + (level - 1) * p.numperlevel
     end
-    input.active = true
-
-    return OutputNode(input)
+    return first
 end
 
-function blank_chromosome(p::Parameters)
-    inputs = Array(InputNode, p.numinputs)
-    nodes = Array(InteriorNode, p.numperlevel * p.numlevels)
-    outputs = Array(OutputNode, p.numoutputs)
-    fitness = 0.0
-    return Chromosome(inputs, nodes, outputs, fitness)
+function last_in_level(p::Parameters, level::Integer)
+    if level == 0
+        last = p.numinputs
+    else
+        last = p.numinputs + level * p.numperlevel
+    end
+    return last
+end
+
+function random_node_position(p::Parameters, minlevel::Integer, maxlevel::Integer)
+    first = first_in_level(p, minlevel)
+    last = last_in_level(p, maxlevel)
+
+    i = rand(first:last)
+    
+    if i <= p.numinputs
+        level = 0
+        index = i
+    else
+        level = div(i - p.numinputs - 1, p.numperlevel) + 1
+        index = rem(i - p.numinputs - 1, p.numperlevel) + 1
+    end
+
+    return (level, index)
 end
 
 function random_chromosome(p::Parameters, funcs::Vector{Func})
-    chromosome = blank_chromosome(p)
+    c = Chromosome(p)
 
-    for i = 1:length(chromosome.inputs)
-        chromosome.inputs[i] = InputNode(i, false)
+    for index = 1:length(c.inputs)
+        c.inputs[index] = InputNode(index)
     end
 
-    for i = 1:length(chromosome.nodes)
-        chromosome.nodes[i] = random_node(p, funcs, chromosome, i)
+    for level = 1:p.numlevels
+        minlevel = max(level - p.numlevelsback, 0)
+        maxlevel = level - 1
+        for index = 1:p.numperlevel
+            func = funcs[rand(1:end)]
+            inputs = Array(NodePosition, func.arity)
+            for i = 1:func.arity
+                (input_level, input_index) = random_node_position(p, minlevel, maxlevel)
+                inputs[i] = (input_level, input_index)
+                c[input_level, input_index].active = true
+            end
+            c.interiors[level, index] = InteriorNode(func, inputs)
+        end
     end
 
-    for i = 1:length(chromosome.outputs)
-        chromosome.outputs[i] = random_output(p, chromosome)
+    minlevel = p.numlevels - p.numlevelsback + 1
+    maxlevel = p.numlevels
+    for index = 1:length(c.outputs)
+        (level, index) = random_node_position(p, minlevel, maxlevel)
+        c.outputs[index] = OutputNode((level, index))
+        c[level, index].active = true
     end
 
-    return chromosome
-end
-
-function evaluate_node(node::InputNode, context::Vector)
-    return context[node.index]
-end
-
-function evaluate_node(node::InteriorNode, context::Vector)
-    func = node.func
-    return apply(func.func, [evaluate_node(n, context) for n = node.inputs[1:func.arity]])
-end
-
-function evaluate_node(node::OutputNode, context::Vector)
-    return evaluate_node(node.input, context)
-end
-
-function execute_chromosome(chromosome::Chromosome, context::Vector)
-    return [evaluate_node(n, context) for n = chromosome.outputs]
+    return c
 end
 
 end
