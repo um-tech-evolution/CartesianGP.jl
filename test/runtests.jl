@@ -11,6 +11,8 @@ const numlevelsback = 10
 funcs = default_funcs()
 p = Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
 
+srand(1)
+
 for _ = 1:100
     c = random_chromosome(p, funcs)
     execute_chromosome(c, [true, true])
