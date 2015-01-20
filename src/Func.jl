@@ -3,14 +3,19 @@ export Func, default_funcs
 type Func
     func::Function
     arity::Integer
+    name::String
 end
+
+Func(f::Function, a::Integer) = Func(f, a, string(f))
 
 const AND = Func(&, 2)
 const OR = Func(|, 2)
 const XOR = Func($, 2)
-const TRUE = Func(() -> 0xf, 0)
+const NOT = Func(~, 1)
+const ZERO = Func(() -> uint64(0), 0, "0")
+const ONE = Func(() -> uint64(~0), 0, "1")
 
 function default_funcs()
-    return [AND, OR, XOR, TRUE]
+    return [AND, OR, XOR, NOT, ZERO, ONE]
 end
 
