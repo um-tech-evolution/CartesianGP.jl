@@ -6,7 +6,7 @@ include("Node.jl")
 include("Chromosome.jl")
 include("Execute.jl")
 
-export random_chromosome
+export random_chromosome, print_chromosome
 
 function first_in_level(p::Parameters, level::Integer)
     if level == 0
@@ -67,12 +67,11 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
 
     minlevel = p.numlevels - p.numlevelsback + 1
     maxlevel = p.numlevels
-    for index = 1:length(c.outputs)
+    for i = 1:length(c.outputs)
         (level, index) = random_node_position(p, minlevel, maxlevel)
-        c.outputs[index] = OutputNode((level, index))
-        c[level, index].active = true
+        c.outputs[i] = OutputNode((level, index),true)
+        c[level,index].active = true
     end
-
     return c
 end
 
