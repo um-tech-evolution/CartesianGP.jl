@@ -1,4 +1,4 @@
-export random_mutation
+export mutate
 
 function mutate(old_c::Chromosome)
     p = old_c.params
