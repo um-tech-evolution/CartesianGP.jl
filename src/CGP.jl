@@ -6,5 +6,6 @@ include("Parameters.jl")
 include("Node.jl")
 include("Chromosome.jl")
 include("Execute.jl")
+include("Mutation.jl")
 
 end
