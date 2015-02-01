@@ -12,8 +12,8 @@ const AND = Func(&, 2)
 const OR = Func(|, 2)
 const XOR = Func($, 2)
 const NOT = Func(~, 1)
-const ZERO = Func(() -> uint64(0), 0, "0")
-const ONE = Func(() -> uint64(~0), 0, "1")
+const ZERO = Func(() -> convert(BitString, 0), 0, "0")
+const ONE = Func(() -> convert(BitString, ~0), 0, "1")
 
 function default_funcs()
     return [AND, OR, XOR, NOT, ZERO, ONE]

@@ -32,12 +32,12 @@ chromosome = random_chromosome(p, funcs)
 print_chromosome(chromosome)    # Print showing all nodes
 print_chromosome(chromosome,true)  # Print showing only active nodes
 if numinputs == 2
-    result = execute_chromosome(chromosome, [convert(Uint64,0xC), convert(Uint64,0xA)])
+    result = execute_chromosome(chromosome, [convert(BitString,0xC), convert(BitString,0xA)])
 elseif numinputs == 3
-    result = execute_chromosome(chromosome, [convert(Uint64,0xF0),convert(Uint64,0xCC), convert(Uint64,0xAA)])
+    result = execute_chromosome(chromosome, [convert(BitString,0xF0),convert(BitString,0xCC), convert(BitString,0xAA)])
 elseif numinputs == 4
-    result = execute_chromosome(chromosome, [convert(Uint64,0xFF00),convert(Uint64,0xF0F0),
-        convert(Uint64,0xCCCC), convert(Uint64,0xAAAA)])
+    result = execute_chromosome(chromosome, [convert(BitString,0xFF00),convert(BitString,0xF0F0),
+        convert(BitString,0xCCCC), convert(BitString,0xAAAA)])
 else
     println("Too many inputs in ahwtests.jl")
 end
