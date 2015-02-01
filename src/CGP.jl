@@ -7,7 +7,7 @@ include("Node.jl")
 include("Chromosome.jl")
 include("Execute.jl")
 
-export random_chromosome, print_chromosome
+export random_chromosome
 
 function first_in_level(p::Parameters, level::Integer)
     if level == 0
