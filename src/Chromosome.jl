@@ -129,7 +129,7 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
     maxlevel = p.numlevels
     for i = 1:length(c.outputs)
         (level, index) = random_node_position(p, minlevel, maxlevel)
-        c.outputs[i] = OutputNode((level, index),true)
+        c.outputs[i] = OutputNode((level, index))
         c[level,index].active = true
     end
     return c
