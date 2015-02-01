@@ -1,0 +1,1 @@
+typealias BitString Uint64

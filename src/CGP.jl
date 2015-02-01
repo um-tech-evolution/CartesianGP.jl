@@ -1,5 +1,6 @@
 module CGP
 
+include("BitString.jl")
 include("Func.jl")
 include("Parameters.jl")
 include("Node.jl")
