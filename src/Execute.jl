@@ -1,7 +1,7 @@
 export execute_chromosome
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector)
-    return context[node.index]
+    return context[node.index].func()
 end
 
 function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector)
@@ -19,5 +19,5 @@ function evaluate_node(c::Chromosome, node::OutputNode, context::Vector)
 end
 
 function execute_chromosome(c::Chromosome, context::Vector)
-    return [evaluate_node(c, node, context) for node = c.outputs]
+    return BitString[evaluate_node(c, node, context) for node = c.outputs]
 end
