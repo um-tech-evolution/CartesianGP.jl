@@ -16,7 +16,7 @@ p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
 for _ = 1:100
     c0 = random_chromosome(p, funcs)
     # Executing on these inputs tests all possible bit combinations for inputs
-    execute_chromosome(c0, [0xC, 0xA])
+    execute_chromosome(c0, [convert(BitString, 0xC), convert(BitString, 0xA)])
 
     # Try a mutation, right now we just want to make sure it doesn't crash
     c1 = mutate(c0, funcs)
