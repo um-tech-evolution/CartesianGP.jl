@@ -1,11 +1,14 @@
 using CGP
 using Base.Test
 
-const numinputs = 2
-const numoutputs = 1
-const numperlevel = 1
-const numlevels = 10
-const numlevelsback = 10
+include("Func.jl")
+include("Chromosome.jl")
+
+numinputs = 2
+numoutputs = 1
+numperlevel = 1
+numlevels = 10
+numlevelsback = 10
 
 funcs = default_funcs()
 p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)

@@ -1,7 +1,7 @@
 export execute_chromosome
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector)
-    return context[node.index].func()
+    return context[node.index]
 end
 
 function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector)
