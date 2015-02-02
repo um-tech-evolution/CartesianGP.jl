@@ -1,4 +1,4 @@
-export Func, default_funcs
+export Func, default_funcs, AND, OR, XOR, NOT, ZERO, ONE
 
 type Func
     func::Function
