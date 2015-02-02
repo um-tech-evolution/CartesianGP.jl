@@ -53,11 +53,10 @@ function mutate(old_c::Chromosome, funcs::Vector{Func})
     minlevel = max(p.numlevels - p.numlevelsback + 1, 0)
     maxlevel = p.numlevels
     for i = 1:numoutputs
-        new_c.outputs[i] = old_c.outputs[i]
         if rand() <= mutrate
             (level, index) = random_node_position(p, minlevel, maxlevel)
         else
-            (level, index) = new_c.outputs[i].input
+            (level, index) = old_c.outputs[i].input
         end
         new_c.outputs[i] = OutputNode((level, index))
         new_c[level, index].active = true
