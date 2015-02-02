@@ -3,13 +3,12 @@ using Base.Test
 
 const numinputs = 2
 const numoutputs = 1
-const nodearity = 2
 const numperlevel = 1
 const numlevels = 10
 const numlevelsback = 10
 
 funcs = default_funcs()
-p = Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
+p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
 
 for _ = 1:100
     c0 = random_chromosome(p, funcs)

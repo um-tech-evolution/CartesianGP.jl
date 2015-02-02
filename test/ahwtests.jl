@@ -12,7 +12,6 @@ using Base.Test
 
 const numinputs = 3
 const numoutputs = 1
-const nodearity = 2
 const numperlevel = 1
 const numlevels = 6
 const numlevelsback = 4
@@ -27,7 +26,7 @@ if length(ARGS) > 0
     end
 end
 funcs = default_funcs()
-p = Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
+p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
 chromosome = random_chromosome(p, funcs)
 print_chromosome(chromosome)    # Print showing all nodes
 print_chromosome(chromosome,true)  # Print showing only active nodes

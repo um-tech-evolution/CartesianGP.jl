@@ -8,19 +8,18 @@ immutable Parameters
 
     numinputs::Integer
     numoutputs::Integer
-    nodearity::Integer
 
     numperlevel::Integer
     numlevels::Integer
     numlevelsback::Integer
 end
 
-function Parameters(numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
+function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
     mu = 1
     lambda = 4
     mutrate = 0.05
     targetfitness = 0.0
 
-    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, nodearity, numperlevel, numlevels, numlevelsback)
+    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
 end
 
