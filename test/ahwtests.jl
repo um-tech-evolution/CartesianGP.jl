@@ -9,16 +9,13 @@
 
 using CGP
 using Base.Test
-import CGP.execute_chromosome
-include("Chromosome.jl")
-include("Func.jl")
 
 # These are set in test/Chromosome.jl which is imported above
-#const numinputs = 3
-#const numoutputs = 1
-#const numperlevel = 1
-#const numlevels = 6
-#const numlevelsback = 4
+const numinputs = 3
+const numoutputs = 3
+const numperlevel = 1
+const numlevels = 6
+const numlevelsback = 4
 
 if length(ARGS) > 0
     try
@@ -37,4 +34,9 @@ result = execute_chromosome(c0)
 #, [convert(BitString, 0xC), convert(BitString, 0xA)])
 print_chromosome(c0)    # Print showing all nodes
 print_chromosome(c0,true)  # Print showing only active nodes
-println("Execution result: ",result)
+print("Execution result: [")
+for i in 1:numoutputs
+   @printf("%#X ",result[i])
+end
+println("]")
+

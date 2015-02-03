@@ -8,7 +8,6 @@ type Chromosome
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
     active_set::Bool
-    #fitness::FloatingPoint
 end
 
 function Chromosome(p::Parameters)
@@ -63,10 +62,7 @@ function print_chromosome(c::Chromosome, active_only::Bool=false)
 
     for i = 1:length(c.outputs)
         active = "+"
-        #active = c.outputs[i].active ? "+" : "*"
-        #if c.outputs[i].active || !active_only
         print("[",c.outputs[i].input,"out",i,active,"] ")
-        #end
     end
     println()
     return
@@ -123,7 +119,6 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
             for i = 1:func.arity
                 (input_level, input_index) = random_node_position(p, minlevel, maxlevel)
                 inputs[i] = (input_level, input_index)
-                #c[input_level, input_index].active = true
             end
             c.interiors[level, index] = InteriorNode(func, inputs)
         end
@@ -134,7 +129,6 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
     for i = 1:length(c.outputs)
         (level, index) = random_node_position(p, minlevel, maxlevel)
         c.outputs[i] = OutputNode((level, index))
-        #c[level,index].active = true
     end
     return c
 end

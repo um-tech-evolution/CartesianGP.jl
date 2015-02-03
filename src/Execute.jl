@@ -21,6 +21,7 @@ function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitStrin
 end
 
 function execute_chromosome(c::Chromosome, context::Vector{BitString})
+    c.active_set = true
     return BitString[evaluate_node(c, node, context) for node = c.outputs]
 end
 
