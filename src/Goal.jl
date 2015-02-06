@@ -36,24 +36,24 @@ function isequal(g::Goal,h::Goal)
    return (g.num_inputs==h.num_inputs) && (g.num_inputs==h.num_inputs) && (g.truth_table==g.truth_table)
 end
 
-# Uses the output of a chromosome to compute its fitness relative to the given goal  g.
-# chrom_out is a 1-dimensional array containing the outputs of execute_chromosome
-# The function fit_funct transforms the Hamming distance between chrom_out and g into a fitness
-function fitness(g::Goal, chrom_out::Array, fit_funct=fit_funct_default::Function)
-   sum = 0
-   for i in 1:g.num_outputs
-      sum += count_ones( chrom_out[i] $ g.truth_table[i] )
-   end
-   return fit_funct(sum)
-end
-
-# The default function for transforming Hamming distance x into a fitness to be maximized.
-# An alternative is to use the Hamming distance as a fitness to be minimized.  
-#   Then this function would be replace by the identity function.
-function fit_funct_default(x)
-   return 1.0/(1.0+x)
-end
-
+## Uses the output of a chromosome to compute its fitness relative to the given goal  g.
+## chrom_out is a 1-dimensional array containing the outputs of execute_chromosome
+## The function fit_funct transforms the Hamming distance between chrom_out and g into a fitness
+#function fitness(g::Goal, chrom_out::Array, fit_funct=fit_funct_default::Function)
+#   sum = 0
+#   for i in 1:g.num_outputs
+#      sum += count_ones( chrom_out[i] $ g.truth_table[i] )
+#   end
+#   return fit_funct(sum)
+#end
+#
+## The default function for transforming Hamming distance x into a fitness to be maximized.
+## An alternative is to use the Hamming distance as a fitness to be minimized.  
+##   Then this function would be replace by the identity function.
+#function fit_funct_default(x)
+#   return 1.0/(1.0+x)
+#end
+#
 # Unpacks a goal from non-interleaved format to unpacked format
 function unpack_goal(g::GoalPacked) 
    if g.interleaved 
@@ -138,6 +138,9 @@ function print_goal_hex(g::GoalPacked)
 end
 
 # prints an unpacked goal in hex format
+# The truth table entries are printed starting from the highest index to the lowest index
+# In other words, print_goal(Goal(2,2,[0x6,0x8]) will print "(2, 2, [0x8 0x6])"
+# This will be explained in the documentation for bit strings.
 function print_goal(g::Goal)
    @printf("(%d, %d, [",g.num_inputs,g.num_outputs)
    for i in g.num_outputs:-1:2

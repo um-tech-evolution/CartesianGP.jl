@@ -15,6 +15,8 @@ using Base.Test
 @test apply(AND.func, [ONE.func(), ZERO.func()]) == ZERO.func()
 @test apply(AND.func, [ZERO.func(), ONE.func()]) == ZERO.func()
 @test apply(AND.func, [ONE.func(), ONE.func()]) == ONE.func()
+# Condensed hexadecimal format version
+@test apply(AND.func, [0xC,0xA]) == 0x8
 
 # OR
 
@@ -22,6 +24,8 @@ using Base.Test
 @test apply(OR.func, [ONE.func(), ZERO.func()]) == ONE.func()
 @test apply(OR.func, [ZERO.func(), ONE.func()]) == ONE.func()
 @test apply(OR.func, [ONE.func(), ONE.func()]) == ONE.func()
+# Condensed hexadecimal format version
+@test apply(OR.func, [0xC,0xA]) == 0xE
 
 # XOR
 
@@ -29,6 +33,8 @@ using Base.Test
 @test apply(XOR.func, [ONE.func(), ZERO.func()]) == ONE.func()
 @test apply(XOR.func, [ZERO.func(), ONE.func()]) == ONE.func()
 @test apply(XOR.func, [ONE.func(), ONE.func()]) == ZERO.func()
+# Condensed hexadecimal format version
+@test apply(XOR.func, [0xC,0xA]) == 0x6
 
 # NOT
 

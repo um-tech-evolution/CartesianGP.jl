@@ -38,7 +38,7 @@ if verbose print("g3 unpacked:    "); print_goal(g3unp) end
 @test pack_goal(unpack_goal(g3ni))==g3ni
 
 # test fitness
-@test fitness(g3unp,g3unp.truth_table)==1.0
-g3pert = GoalPacked(3,3,0xA40FC9,false)   # differs in one bit from g3ni, should have fitness 0.5
-if verbose print("g3 perturbed by 1 bit: ");print_goal_hex(g3pert) end
-@test fitness(unpack_goal(g3pert),g3unp.truth_table)==0.5
+#@test fitness(g3unp,g3unp.truth_table)==1.0
+#g3pert = GoalPacked(3,3,0xA40FC9,false)   # differs in one bit from g3ni, should have fitness 0.5
+#if verbose print("g3 perturbed by 1 bit: ");print_goal_hex(g3pert) end
+#@test fitness(unpack_goal(g3pert),g3unp.truth_table)==0.5

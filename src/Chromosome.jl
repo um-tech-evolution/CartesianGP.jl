@@ -1,6 +1,7 @@
 import Base.getindex
+include("Goal.jl")
 
-export Chromosome, getindex, print_chromosome, random_chromosome
+export Chromosome, getindex, print_chromosome, random_chromosome, fitness
 
 type Chromosome
     params::Parameters
@@ -132,3 +133,22 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
     end
     return c
 end
+
+# Uses the output of a chromosome to compute its fitness relative to the given goal  g.
+# chrom_out is a 1-dimensional array containing the outputs of execute_chromosome
+# The function fit_funct transforms the Hamming distance between chrom_out and g into a fitness
+function fitness(g::Goal, chrom_out::Array, fit_funct=fit_funct_default::Function)
+   sum = 0
+   for i in 1:g.num_outputs
+      sum += count_ones( chrom_out[i] $ g.truth_table[i] )
+   end
+   return fit_funct(sum)
+end
+
+# The default function for transforming Hamming distance x into a fitness to be maximized.
+# An alternative is to use the Hamming distance as a fitness to be minimized.  
+#   Then this function would be replace by the identity function.
+function fit_funct_default(x)
+   return 1.0/(1.0+x)
+end
+
