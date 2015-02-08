@@ -37,6 +37,9 @@ end
 # Active notes are indicated with a "+" and inactive notes with a "*".
 # If active_only is true, then only the active notes are shown.
 function print_chromosome(c::Chromosome, active_only::Bool=false)
+    if !c.active_set
+       println("Warning in print_chromosome.  Active notes of chromosome have not been determined.")
+    end
     for i = 1:length(c.inputs)
         active = c.inputs[i].active ? "+" : "*"
         if c.inputs[i].active || !active_only
@@ -62,7 +65,7 @@ function print_chromosome(c::Chromosome, active_only::Bool=false)
     end
 
     for i = 1:length(c.outputs)
-        active = "+"
+        active = "*"   # output nodes are always active and have no "active" field
         print("[",c.outputs[i].input,"out",i,active,"] ")
     end
     println()
