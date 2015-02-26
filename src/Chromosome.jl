@@ -7,7 +7,7 @@ type Chromosome
     inputs::Vector{InputNode}
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
-    fitness::FloatingPoint
+    active_set::Bool
 end
 
 function Chromosome(p::Parameters)
@@ -15,7 +15,9 @@ function Chromosome(p::Parameters)
     interiors = Array(InteriorNode, p.numlevels, p.numperlevel)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
-    return Chromosome(p, inputs, interiors, outputs, fitness)
+    active_set = false
+
+    return Chromosome(p, inputs, interiors, outputs, active_set)
 end
 
 function getindex(c::Chromosome, level::Integer, index::Integer)
@@ -30,42 +32,51 @@ function getindex(c::Chromosome, level::Integer, index::Integer)
     return c.interiors[level, index]
 end
 
-# Prints the chromosome in a compact text format (on one line).
-# Active notes are indicated with a "+" and inactive notes with a "*".
-# If active_only is true, then only the active notes are shown.
-function print_chromosome(c::Chromosome, active_only::Bool=false)
+# Prints the chromosome in a compact text format (on one line).  Active notes
+# are indicated with a "+" and inactive notes with a "*".  If the chromosome
+# has not been evaluated, the active field is set to "?" since the status of
+# the nodes (with the exception of output nodes) is unknown.  If active_only is
+# true, then only the active notes are shown.
+function print_chromosome(c::Chromosome, active_only::Bool)
+    active_set = c.active_set
+
+    # Input nodes
     for i = 1:length(c.inputs)
-        active = c.inputs[i].active ? "+" : "*"
         if c.inputs[i].active || !active_only
-            print("[in",i,active,"] ")
+            active = c.inputs[i].active ? "+" : (active_set ? "*" : "?")
+            print("[in", i, active, "] ")
         end
     end
 
+    # Interior nodes
     for i = 1:c.params.numlevels
         for j = 1:c.params.numperlevel
-           active = c.interiors[i,j].active ? "+" : "*"
-           if c.interiors[i,j].active || !active_only
-               print("[")
-               for k = 1:length(c.interiors[i,j].inputs)
-                   if c.interiors[i,j].inputs[k][1] == 0
-                       print("(in", c.interiors[i,j].inputs[k][2],")")
-                   else
-                       print(c.interiors[i,j].inputs[k])
-                   end
-               end
-               print("\"",c.interiors[i,j].func.name,"\"",(i,j),active,"] ")
-           end
+            if c.interiors[i,j].active || !active_only
+                active = c.interiors[i,j].active ? "+" : (active_set ? "*" : "?")
+                print("[")
+                for k = 1:length(c.interiors[i,j].inputs)
+                    if c.interiors[i,j].inputs[k][1] == 0
+                        print("(in", c.interiors[i,j].inputs[k][2], ")")
+                    else
+                        print(c.interiors[i,j].inputs[k])
+                    end
+                end
+                print("\"", c.interiors[i, j].func.name, "\"", (i, j), active, "] ")
+            end
         end
     end
 
+    # Output nodes
+    active = "+"
     for i = 1:length(c.outputs)
-        active = c.outputs[i].active ? "+" : "*"
-        if c.outputs[i].active || !active_only
-            print("[",c.outputs[i].input,"out",i,active,"] ")
-        end
+        print("[", c.outputs[i].input, "out", i, active, "] ")
     end
     println()
     return
+end
+
+function print_chromosome(c::Chromosome)
+    print_chromosome(c, false)
 end
 
 function first_in_level(p::Parameters, level::Integer)
@@ -119,7 +130,6 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
             for i = 1:func.arity
                 (input_level, input_index) = random_node_position(p, minlevel, maxlevel)
                 inputs[i] = (input_level, input_index)
-                c[input_level, input_index].active = true
             end
             c.interiors[level, index] = InteriorNode(func, inputs)
         end
@@ -130,7 +140,6 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
     for i = 1:length(c.outputs)
         (level, index) = random_node_position(p, minlevel, maxlevel)
         c.outputs[i] = OutputNode((level, index))
-        c[level,index].active = true
     end
     return c
 end
