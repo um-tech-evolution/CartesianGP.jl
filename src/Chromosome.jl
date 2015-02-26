@@ -1,13 +1,14 @@
 import Base.getindex
+include("Goal.jl")
 
-export Chromosome, getindex, print_chromosome, random_chromosome
+export Chromosome, getindex, print_chromosome, random_chromosome, fitness
 
 type Chromosome
     params::Parameters
     inputs::Vector{InputNode}
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
-    fitness::FloatingPoint
+    active_set::Bool
 end
 
 function Chromosome(p::Parameters)
@@ -15,7 +16,9 @@ function Chromosome(p::Parameters)
     interiors = Array(InteriorNode, p.numlevels, p.numperlevel)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
-    return Chromosome(p, inputs, interiors, outputs, fitness)
+    active_not_set = false
+
+    return Chromosome(p, inputs, interiors, outputs, active_not_set)
 end
 
 function getindex(c::Chromosome, level::Integer, index::Integer)
@@ -34,6 +37,9 @@ end
 # Active notes are indicated with a "+" and inactive notes with a "*".
 # If active_only is true, then only the active notes are shown.
 function print_chromosome(c::Chromosome, active_only::Bool=false)
+    if !c.active_set
+       println("Warning in print_chromosome.  Active notes of chromosome have not been determined.")
+    end
     for i = 1:length(c.inputs)
         active = c.inputs[i].active ? "+" : "*"
         if c.inputs[i].active || !active_only
@@ -59,10 +65,8 @@ function print_chromosome(c::Chromosome, active_only::Bool=false)
     end
 
     for i = 1:length(c.outputs)
-        active = c.outputs[i].active ? "+" : "*"
-        if c.outputs[i].active || !active_only
-            print("[",c.outputs[i].input,"out",i,active,"] ")
-        end
+        active = "*"   # output nodes are always active and have no "active" field
+        print("[",c.outputs[i].input,"out",i,active,"] ")
     end
     println()
     return
@@ -119,7 +123,6 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
             for i = 1:func.arity
                 (input_level, input_index) = random_node_position(p, minlevel, maxlevel)
                 inputs[i] = (input_level, input_index)
-                c[input_level, input_index].active = true
             end
             c.interiors[level, index] = InteriorNode(func, inputs)
         end
@@ -130,7 +133,25 @@ function random_chromosome(p::Parameters, funcs::Vector{Func})
     for i = 1:length(c.outputs)
         (level, index) = random_node_position(p, minlevel, maxlevel)
         c.outputs[i] = OutputNode((level, index))
-        c[level,index].active = true
     end
     return c
 end
+
+# Uses the output of a chromosome to compute its fitness relative to the given goal  g.
+# chrom_out is a 1-dimensional array containing the outputs of execute_chromosome
+# The function fit_funct transforms the Hamming distance between chrom_out and g into a fitness
+function fitness(g::Goal, chrom_out::Array, fit_funct=fit_funct_default::Function)
+   sum = 0
+   for i in 1:g.num_outputs
+      sum += count_ones( chrom_out[i] $ g.truth_table[i] )
+   end
+   return fit_funct(sum)
+end
+
+# The default function for transforming Hamming distance x into a fitness to be maximized.
+# An alternative is to use the Hamming distance as a fitness to be minimized.  
+#   Then this function would be replace by the identity function.
+function fit_funct_default(x)
+   return 1.0/(1.0+x)
+end
+

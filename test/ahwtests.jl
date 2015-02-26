@@ -10,8 +10,9 @@
 using CGP
 using Base.Test
 
+# These are set in test/Chromosome.jl which is imported above
 const numinputs = 3
-const numoutputs = 1
+const numoutputs = 3
 const numperlevel = 1
 const numlevels = 6
 const numlevelsback = 4
@@ -25,19 +26,17 @@ if length(ARGS) > 0
         # if the int() conversion fails, continue without setting the random number seed
     end
 end
+
 funcs = default_funcs()
 p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
-chromosome = random_chromosome(p, funcs)
-print_chromosome(chromosome)    # Print showing all nodes
-print_chromosome(chromosome,true)  # Print showing only active nodes
-if numinputs == 2
-    result = execute_chromosome(chromosome, [convert(BitString,0xC), convert(BitString,0xA)])
-elseif numinputs == 3
-    result = execute_chromosome(chromosome, [convert(BitString,0xF0),convert(BitString,0xCC), convert(BitString,0xAA)])
-elseif numinputs == 4
-    result = execute_chromosome(chromosome, [convert(BitString,0xFF00),convert(BitString,0xF0F0),
-        convert(BitString,0xCCCC), convert(BitString,0xAAAA)])
-else
-    println("Too many inputs in ahwtests.jl")
+c0 = random_chromosome(p, funcs)
+result = execute_chromosome(c0)
+#, [convert(BitString, 0xC), convert(BitString, 0xA)])
+print_chromosome(c0)    # Print showing all nodes
+print_chromosome(c0,true)  # Print showing only active nodes
+print("Execution result: [")
+for i in 1:numoutputs
+   @printf("%#X ",result[i])
 end
-println(result)
+println("]")
+
