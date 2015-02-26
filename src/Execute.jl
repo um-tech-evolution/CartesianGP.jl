@@ -26,7 +26,7 @@ function execute_chromosome(c::Chromosome, context::Vector{BitString})
 end
 
 # Supplies the standard context for up to 4 inputs
-function execute_c(c::Chromosome)
+function execute_chromosome(c::Chromosome)
     params = c.params
     mask = output_mask(params.numinputs)
 
