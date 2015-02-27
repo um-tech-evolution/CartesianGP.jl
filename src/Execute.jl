@@ -42,7 +42,7 @@ function execute_chromosome(c::Chromosome)
         error("Too many inputs, max is 4")
     end
 
-    result = execute_chromosome(c, [convert(BitString, x) for x = ctx])
+    result = execute_chromosome(c, convert(Vector{BitString},[convert(BitString, x) for x = ctx]))
 
     return [x & mask for x = result]
 end
