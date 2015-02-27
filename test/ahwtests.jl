@@ -31,7 +31,6 @@ funcs = default_funcs()
 p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
 c0 = random_chromosome(p, funcs)
 result = execute_chromosome(c0)
-#, [convert(BitString, 0xC), convert(BitString, 0xA)])
 print_chromosome(c0)    # Print showing all nodes
 print_chromosome(c0,true)  # Print showing only active nodes
 print("Execution result: [")
