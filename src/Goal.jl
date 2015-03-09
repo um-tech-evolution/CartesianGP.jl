@@ -38,11 +38,6 @@ end
 #      All bits of an output are consecutive.
 # interleaved:  All outputs are stored in one BitString.
 #      The bits of outputs are interleaved.  This format is used by the g_compose f function.
-
-# GoalPacked is a goal type where all outputs are "packed" into one BitString.
-# May be non-interleaved or interleaved.
-# The interleaved field should be true if interleaved, false if non-interleaved.
-
 # Packed goals combine all outputs into a single bitstring and, consequently,
 # can only handle functions with an appropriately small number of outputs.
 abstract PackedGoal
