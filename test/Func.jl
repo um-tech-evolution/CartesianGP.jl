@@ -7,7 +7,7 @@ using Base.Test
 
 # ONE
 
-@test ONE.func() == convert(BitString, 2 ^ 64 - 1)
+@test ONE.func() == convert(BitString, -1)
 
 # AND
 
