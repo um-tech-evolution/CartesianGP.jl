@@ -118,6 +118,14 @@ function convert(::Type{BasicPackedGoal}, g::InterleavedPackedGoal)
     return BasicPackedGoal(g.num_inputs, g.num_outputs, ttable)
 end
 
+function convert(::Type{Goal}, g::InterleavedPackedGoal)
+    return convert(Goal, convert(BasicPackedGoal, g))
+end
+
+function convert{N}(::Type{InterleavedPackedGoal}, g::Goal{N})
+    return convert(InterleavedPackedGoal, convert(BasicPackedGoal, g))
+end
+
 # Utility function which returns bitstring mask for one output of the packed representation.
 function output_mask(num_inputs)
     one = convert(BitString, 0x1)
