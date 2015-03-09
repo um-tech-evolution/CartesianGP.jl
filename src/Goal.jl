@@ -1,6 +1,7 @@
 import Base.==
+import Base.convert
 
-export Goal, print_goal
+export Goal, PackedGoal, BasicPackedGoal, InterleavedPackedGoal, print_goal, convert, ==
 
 # A goal describes a boolean function with one or more inputs and one or more
 # outputs. It defines the number of inputs and the values of each output for
@@ -38,7 +39,7 @@ end
 # interleaved:  All outputs are stored in one BitString.
 #      The bits of outputs are interleaved.  This format is used by the g_compose f function.
 
-# GoalPacke is a goal type where all outputs are "packed" into one BitString.
+# GoalPacked is a goal type where all outputs are "packed" into one BitString.
 # May be non-interleaved or interleaved.
 # The interleaved field should be true if interleaved, false if non-interleaved.
 
@@ -52,7 +53,33 @@ immutable BasicPackedGoal <: PackedGoal
     truth_table::BitString
 end
 
-function BasicPackedGoal{N}(g::Goal{N})
+immutable InterleavedPackedGoal <: PackedGoal
+    num_inputs::Integer
+    num_outputs::Integer
+    truth_table::BitString
+end
+
+function =={T <: PackedGoal}(g::T, h::T)
+    (g.num_inputs == h.num_inputs) &&
+    (g.num_outputs == h.num_outputs) &&
+    (g.truth_table == h.truth_table)
+end
+==(g::BasicPackedGoal, h::InterleavedPackedGoal) = error("Cannot compare basic and interleaved goals")
+==(g::InterleavedPackedGoal, h::BasicPackedGoal) = h == g
+
+# TODO: Do we need a type parameter here? Probably? Maybe?
+function convert(::Type{Goal}, g::BasicPackedGoal)
+    temp_ttable = g.truth_table
+    ttable = Array(BitString, g.num_outputs)
+    mask = output_mask(g.num_inputs)
+    for i = 1:g.num_outputs
+        ttable[i] = mask & temp_ttable
+        temp_ttable >>= (2 ^ g.num_inputs)
+    end
+    return Goal(g.num_inputs, ttable)
+end
+
+function convert{N}(::Type{BasicPackedGoal}, g::Goal{N})
     if (2 ^ g.num_inputs) * N > sizeof(BitString)
         error("The goal is too large to be packed.")
     end
@@ -65,13 +92,7 @@ function BasicPackedGoal{N}(g::Goal{N})
     return BasicPackedGoal(g.num_inputs, N, ttable)
 end
 
-immutable InterleavedPackedGoal <: PackedGoal
-    num_inputs::Integer
-    num_outputs::Integer
-    truth_table::BitString
-end
-
-function InterleavedPackedGoal(g::BasicPackedGoal)
+function convert(::Type{InterleavedPackedGoal}, g::BasicPackedGoal)
     ttable = convert(BitString, 0)
     one = convert(BitString, 1)
     p = 2 ^ g.num_inputs
@@ -83,28 +104,31 @@ function InterleavedPackedGoal(g::BasicPackedGoal)
     end
     return InterleavedPackedGoal(g.num_inputs, N, ttable)
 end
-InterleavedPackedGoal{N}(g::Goal{N}) = InterleavedPackedGoal(BasicPackedGoal(g))
 
-# Note that this works, but if an interleaved goal is compared to a
-# non-interleaved goal, Julia's default definitions for `==` will kick in and
-# the test will come back as false. We may want to reconsider override `==` for
-# this reason.
-function =={T <: PackedGoal}(g::T, h::T)
-    (g.num_inputs == h.num_inputs) &&
-    (g.num_outputs == h.num_outputs) &&
-    (g.truth_table == h.truth_table)
-end
-
-function convert(::Type{Goal}, g::BasicPackedGoal)
-    temp_ttable = g.truth_table
-    ttable = Array(BitString, g.num_outputs)
-    mask = output_mask(g.num_inputs)
-    for i = 1:g.num_outputs
-        ttable[i] = mask & temp_ttable
-        temp_ttable >>= (2 ^ g.num_inputs)
+function convert(::Type{BasicPackedGoal}, g::InterleavedPackedGoal)
+    ttable = convert(BitString,0)
+    one = convert(BitString, 1)
+    p = 2 ^ g.num_inputs
+    for j in g.num_outputs-1:-1:0
+        for k in p-1:-1:0
+            r = in >> (k * g.num_outputs + j)
+            ttable = (ttable << 1) $ (r & one)
+        end
     end
-    return Goal(g.num_inputs, ttable)
+    return BasicPackedGoal(g.num_inputs, g.num_outputs, ttable)
 end
+
+# Utility function which returns bitstring mask for one output of the packed representation.
+function output_mask(num_inputs)
+    one = convert(BitString, 0x1)
+    mask = one
+    for i in 1:(2 ^ num_inputs - 1)
+        mask <<= 1
+        mask |= one
+    end
+    return mask
+end
+
 
 
 
@@ -137,40 +161,6 @@ end
 #   return 1.0/(1.0+x)
 #end
 #
-# Unpacks a goal from non-interleaved format to unpacked format
-function unpack_goal(g::GoalPacked)
-    if g.interleaved
-        error("Error in unpack_goal.  An interleaved goal cannot be unpacked.")
-    end
-    tmp_truth_table = g.truth_table
-    result = Array(BitString,g.num_outputs)   # used to build the unpacked truth table
-    mask = output_mask(g.num_inputs)
-    for i in 1:g.num_outputs
-        result[i] = mask & tmp_truth_table
-        tmp_truth_table >>= (2^g.num_inputs)
-        #@printf("i:%d  %#X  %#X\n",i,tmp_truth_table,result[i])
-    end
-    return Goal(g.num_inputs,g.num_outputs,result)
-end
-
-# converts interleaved GoalPacked to non-interleaved GoalPacked
-function de_interleave(g::GoalPacked)
-    if !g.interleaved
-        error("Error in function de_interleave.  Cannot de_interleave an non-interleaved goal.")
-    end
-    result = convert(BitString,0)   # used to build the truth table
-    local one = convert(BitString,1)
-    local in=g.truth_table
-    local p = 2^g.num_inputs
-    for k in g.num_outputs-1:-1:0
-        for j in p-1:-1:0
-            r = in >> (j*g.num_outputs+k)
-            #@printf("j:%d   k:%d  j*g.num_outputs+k:%d  r&1:%d\n",j,k,j*g.num_outputs+k,r&one)
-            result = (result << 1) $ (r & one)
-        end
-    end
-    return GoalPacked(g.num_inputs,g.num_outputs,result,false)
-end
 
 
 # prints a packed goal in octal format
@@ -276,13 +266,3 @@ function read_plu(fname)
 end
 
 
-# Utility function which returns bitstring mask for one output of the packed representation
-function output_mask(num_inputs)
-    one = convert(BitString,0x1)
-    mask = one
-    for i in 1:(2^num_inputs-1)
-        mask <<= 1
-        mask |= one
-    end
-    return mask
-end
