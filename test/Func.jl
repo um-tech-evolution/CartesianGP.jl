@@ -7,7 +7,7 @@ using Base.Test
 
 # ONE
 
-@test ONE.func() == convert(BitString, -1)
+@test ONE.func() == typemax(BitString)
 
 # AND
 
