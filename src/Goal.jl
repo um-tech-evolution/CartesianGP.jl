@@ -12,8 +12,8 @@ immutable Goal{N}
 end
 
 Goal{N}(n::Integer, t::NTuple{N, Integer}) = Goal(n, convert(NTuple{N, BitString}, t))
-Goal{N}(n::Integer, b::Vector{BitString}) = Goal(n, ntuple(i -> b[i], length(b)))
-Goal{N}(c::Chromosome, b::Vector{BitString}) = Goal(c.num_inputs, b)
+Goal(n::Integer, b::Vector{BitString}) = Goal(n, ntuple(i -> b[i], length(b)))
+Goal(c::Chromosome, b::Vector{BitString}) = Goal(c.num_inputs, b)
 
 # The equality operator for Goals is true if the number of inputs, number of
 # outputs, and the output truth tables are identical and false otherwise.
