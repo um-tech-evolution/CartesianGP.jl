@@ -67,6 +67,11 @@ end
 ==(g::BasicPackedGoal, h::InterleavedPackedGoal) = error("Cannot compare basic and interleaved goals")
 ==(g::InterleavedPackedGoal, h::BasicPackedGoal) = h == g
 
+# Prints a packed goal in hex by converting it to an unpacked goal.
+function print_goal{T <: PackedGoal}(g::T)
+    print_goal(convert(Goal, g))
+end
+
 # TODO: Do we need a type parameter here? Probably? Maybe?
 function convert(::Type{Goal}, g::BasicPackedGoal)
     temp_ttable = g.truth_table
@@ -170,24 +175,6 @@ end
 #end
 #
 
-
-# prints a packed goal in octal format
-function print_goal_octal(g::GoalPacked)
-    if g.interleaved
-        @printf("(%d, %d, 0o%o interleaved)\n",g.num_inputs,g.num_outputs,g.truth_table)
-    else
-        @printf("(%d, %d, 0o%o non-interleaved)\n",g.num_inputs,g.num_outputs,g.truth_table)
-    end
-end
-
-# prints a packed goal in hex format
-function print_goal_hex(g::GoalPacked)
-    if g.interleaved
-        @printf("(%d, %d, %#X interleaved)\n",g.num_inputs,g.num_outputs,g.truth_table)
-    else
-        @printf("(%d, %d, %#X non-interleaved)\n",g.num_inputs,g.num_outputs,g.truth_table)
-    end
-end
 
 # Composes two goals G and F which must be in packed interleaved format.
 # The number of inputs of G must be equal to the number of outputs of F
