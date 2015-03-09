@@ -1,7 +1,7 @@
 import Base.==
 import Base.convert
 
-export Goal, PackedGoal, BasicPackedGoal, InterleavedPackedGoal, print_goal, convert, ==
+export Goal, PackedGoal, BasicPackedGoal, InterleavedPackedGoal, print_goal, compose, convert, ==
 
 # A goal describes a boolean function with one or more inputs and one or more
 # outputs. It defines the number of inputs and the values of each output for
@@ -137,6 +137,33 @@ function output_mask(num_inputs)
     return mask
 end
 
+# Compose two goals g, and h. The number of outputs from h must be
+# equal to the number of inputs to g.
+function compose(g::InterleavedPackedGoal, h::InterleavedPackedGoal)
+    if g.num_inputs != h.num_outputs
+        error("Cannot compose g and h, input-output mismatch.")
+    end
+    
+    zeros = convert(BitString, 0)
+    ones = ~zeros
+
+    mask_g = (ones << g.num_outputs) $ ones
+    mask_h = (ones << h.num_outputs) $ ones
+
+    ttable = convert(BitString, 0)
+
+    t_g = g.truth_table
+    t_h = h.truth_table
+
+    for i = 0:(2 ^ h.num_outputs - 1)
+        g_i = t_g & mask_g
+        h_g_i (t_h >> (h.num_outputs * g_i)) & mask_h
+        ttable = ttable $ h_g_i << (i * h.num_outputs)
+        t_g = t_g >> g.num_outputs
+    end
+    return InterleavedPackedGoal(g.num_inputs, h.num_outputs, ttable)
+end
+
 
 
 
@@ -171,36 +198,6 @@ end
 #
 
 
-# Composes two goals G and F which must be in packed interleaved format.
-# The number of inputs of G must be equal to the number of outputs of F
-function g_compose_f(G::GoalPacked, F::GoalPacked)  # compute  G o F, i. e., G composed with F
-    if F.interleaved == false || G.interleaved == false
-        error("Error in function g_compose_f.  Arguments must be interleaved goals.")
-        end
-        if F.num_outputs != G.num_inputs
-        error("error in g_compose_f. f.num_outputs must equal g.num_inputs")
-    end
-    local zeros= convert(BitString,0x0)   # BitString of all zeros
-    local ones = ~zeros                   #BitString of all ones
-    local mask_f = (ones << F.num_outputs) $ ones
-    local mask_g  = (ones << G.num_outputs) $ ones
-    local r = convert(BitString,0)  # Used to construct the truth table of the result
-    f = F.truth_table
-    g = G.truth_table
-    #@printf("mask f: o%o\n",mask_f)
-    #@printf("mask g: o%o\n",mask_g)
-    for k in 0:2^G.num_outputs-1
-        f_k = f & mask_f    # f(k)
-        #@printf("k:%d  f(k):    o%o  %#X\n",k,f_k,f_k)
-        g_f_k = (g >> (G.num_outputs * f_k)) & mask_g
-        #@printf("k:%d  g(f(k)): o%o  %#X\n",k,g_f_k,g_f_k)
-        r = r $ g_f_k << (k * G.num_outputs)
-        #@printf("g(f(k))<<(k* G.num_outputs): o%o  %#X\n",g_f_k << (k * G.num_outputs),g_f_k << (k * G.num_outputs))
-        f = f >> F.num_outputs
-    end
-    result = GoalPacked(F.num_inputs,G.num_outputs,r,true)
-    return result
-end
 
 # Reads the ".plu" file whose name is fname.
 # "*.plu" files define goals in Julian Miller's version 1.1 of GGP.
