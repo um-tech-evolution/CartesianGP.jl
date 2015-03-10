@@ -19,3 +19,12 @@ g_i = InterleavedPackedGoal(2, 2, 0b00000110)
 @test Goal(2, (0b0000, 0b0000)) != g_u
 @test BasicPackedGoal(2, 2, 0b00000000) != g_p
 @test InterleavedPackedGoal(2, 2, 0b00000000) != g_i
+
+@test_throws ErrorException g_u == g_p
+@test_throws ErrorException g_p == g_u
+@test_throws ErrorException g_p == g_i
+@test_throws ErrorException g_i == g_p
+@test_throws ErrorException g_u == g_i
+@test_throws ErrorException g_i == g_u
+
+# TODO: Add tests for compose()

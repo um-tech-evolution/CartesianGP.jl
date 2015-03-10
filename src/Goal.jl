@@ -61,6 +61,8 @@ function =={T <: PackedGoal}(g::T, h::T)
 end
 ==(g::BasicPackedGoal, h::InterleavedPackedGoal) = error("Cannot compare basic and interleaved goals")
 ==(g::InterleavedPackedGoal, h::BasicPackedGoal) = h == g
+=={T <: PackedGoal}(g::Goal, h::T) = error("Cannot compare unpacked and packed goals")
+=={T <: PackedGoal}(g::T, h::Goal) = h == g
 
 # Prints a packed goal in hex by converting it to an unpacked goal.
 function print_goal{T <: PackedGoal}(g::T)
