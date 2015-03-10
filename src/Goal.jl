@@ -97,21 +97,22 @@ function convert(::Type{InterleavedPackedGoal}, g::BasicPackedGoal)
     one = convert(BitString, 1)
     p = 2 ^ g.num_inputs
     for j = (p-1):-1:0
-        for k = N:-1:0
+        for k = (g.num_outputs-1):-1:0
             r = g.truth_table >> (k * (p - 1) + j + k)
             ttable = (ttable << 1) $ (r & one)
         end
     end
-    return InterleavedPackedGoal(g.num_inputs, N, ttable)
+    return InterleavedPackedGoal(g.num_inputs, g.num_outputs, ttable)
 end
 
 function convert(::Type{BasicPackedGoal}, g::InterleavedPackedGoal)
-    ttable = convert(BitString,0)
+    ttable = convert(BitString, 0)
     one = convert(BitString, 1)
+    t_g = g.truth_table
     p = 2 ^ g.num_inputs
-    for j in g.num_outputs-1:-1:0
-        for k in p-1:-1:0
-            r = in >> (k * g.num_outputs + j)
+    for j = (g.num_outputs-1):-1:0
+        for k = p-1:-1:0
+            r = t_g >> (k * g.num_outputs + j)
             ttable = (ttable << 1) $ (r & one)
         end
     end
@@ -126,7 +127,8 @@ function convert{N}(::Type{InterleavedPackedGoal}, g::Goal{N})
     return convert(InterleavedPackedGoal, convert(BasicPackedGoal, g))
 end
 
-# Utility function which returns bitstring mask for one output of the packed representation.
+# Utility function which returns bitstring mask for one output of the
+# packed representation.
 function output_mask(num_inputs)
     one = convert(BitString, 0x1)
     mask = one

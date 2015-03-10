@@ -3,6 +3,7 @@ using Base.Test
 
 include("Func.jl")
 include("Chromosome.jl")
+include("Goal.jl")
 
 numinputs = 2
 numoutputs = 1
