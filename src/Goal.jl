@@ -69,7 +69,6 @@ function print_goal{T <: PackedGoal}(g::T)
     print_goal(convert(Goal, g))
 end
 
-# TODO: Do we need a type parameter here? Probably? Maybe?
 function convert(::Type{Goal}, g::BasicPackedGoal)
     temp_ttable = g.truth_table
     ttable = Array(BitString, g.num_outputs)
