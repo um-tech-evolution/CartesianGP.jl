@@ -11,6 +11,8 @@ perfectly suitable for other applications as well.
 
 ## Development
 
+### Vagrant
+
 There is a [Vagrant](http://docs.vagrantup.com/) configuration file
 (called `Vagrantfile`) in the repository root that will provide two
 properly configured development and test-running environments (using
