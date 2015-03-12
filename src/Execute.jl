@@ -12,7 +12,7 @@ function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitStr
         evaluate_node(c, c[level, index], context)
     end
     node.active = true
-    return apply(func.func, args)
+    return func.func(args...)
 end
 
 function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitString})
