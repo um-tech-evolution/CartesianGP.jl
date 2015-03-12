@@ -1,7 +1,7 @@
 import Base.==
 import Base.convert
 
-export Goal, PackedGoal, BasicPackedGoal, InterleavedPackedGoal, print_goal, compose, convert, ==
+export Goal, PackedGoal, BasicPackedGoal, InterleavedPackedGoal, print_goal, compose, convert, ==, read_plu
 
 # A goal describes a boolean function with one or more inputs and one or more
 # outputs. It defines the number of inputs and the values of each output for
@@ -81,7 +81,7 @@ function convert(::Type{Goal}, g::BasicPackedGoal)
 end
 
 function convert{N}(::Type{BasicPackedGoal}, g::Goal{N})
-    if (2 ^ g.num_inputs) * N > sizeof(BitString)
+    if (2 ^ g.num_inputs) * N > 8*sizeof(BitString)  # 8 is the number of bits in a byte
         error("The goal is too large to be packed.")
     end
 
@@ -147,8 +147,7 @@ function compose(g::InterleavedPackedGoal, h::InterleavedPackedGoal)
         error("Cannot compose g and h, input-output mismatch.")
     end
     
-    zeros = convert(BitString, 0)
-    ones = ~zeros
+    ones = typemax(BitString)
 
     mask_g = (ones << g.num_outputs) $ ones
     mask_h = (ones << h.num_outputs) $ ones
@@ -160,26 +159,12 @@ function compose(g::InterleavedPackedGoal, h::InterleavedPackedGoal)
 
     for i = 0:(2 ^ h.num_outputs - 1)
         g_i = t_g & mask_g
-        h_g_i (t_h >> (h.num_outputs * g_i)) & mask_h
+        h_g_i = (t_h >> (h.num_outputs * g_i)) & mask_h
         ttable = ttable $ h_g_i << (i * h.num_outputs)
         t_g = t_g >> g.num_outputs
     end
     return InterleavedPackedGoal(g.num_inputs, h.num_outputs, ttable)
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Uses the output of a chromosome to compute its fitness relative to the given goal  g.
 ## chrom_out is a 1-dimensional array containing the outputs of execute_chromosome
@@ -199,8 +184,6 @@ end
 #   return 1.0/(1.0+x)
 #end
 #
-
-
 
 # Reads the ".plu" file whose name is fname.
 # "*.plu" files define goals in Julian Miller's version 1.1 of GGP.
@@ -243,16 +226,12 @@ function read_plu(fname)
     end
     word_size = 2^num_inputs
     truth_table = convert(BitString,0)
-    #print("outputs: ")
     for o in outputs
         #@printf(" %#X",o)
         truth_table = truth_table << word_size
         truth_table = truth_table $ o
     end
-    #println()
-    #@printf("goal: %#X\n",truth_table)
-    goal = construct_goal(num_inputs,num_outputs,truth_table,true)
-    return goal
+    return BasicPackedGoal(num_inputs, num_outputs, truth_table)
 end
 
 
