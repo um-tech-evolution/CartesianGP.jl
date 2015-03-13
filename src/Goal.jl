@@ -166,25 +166,6 @@ function compose(g::InterleavedPackedGoal, h::InterleavedPackedGoal)
     return InterleavedPackedGoal(g.num_inputs, h.num_outputs, ttable)
 end
 
-## Uses the output of a chromosome to compute its fitness relative to the given goal  g.
-## chrom_out is a 1-dimensional array containing the outputs of execute_chromosome
-## The function fit_funct transforms the Hamming distance between chrom_out and g into a fitness
-#function fitness(g::Goal, chrom_out::Array, fit_funct=fit_funct_default::Function)
-#   sum = 0
-#   for i in 1:g.num_outputs
-#      sum += count_ones( chrom_out[i] $ g.truth_table[i] )
-#   end
-#   return fit_funct(sum)
-#end
-#
-## The default function for transforming Hamming distance x into a fitness to be maximized.
-## An alternative is to use the Hamming distance as a fitness to be minimized.
-##   Then this function would be replace by the identity function.
-#function fit_funct_default(x)
-#   return 1.0/(1.0+x)
-#end
-#
-
 # Reads the ".plu" file whose name is fname.
 # "*.plu" files define goals in Julian Miller's version 1.1 of GGP.
 # This version is limited to goals with at most 4 inputs and at most 4 outputs.
@@ -197,12 +178,12 @@ function read_plu(fname)
         fields = split(line,' ')
         if fields[1][1] == '.'
             if fields[1][2] == 'i'
-                num_inputs = int(fields[2])
+                num_inputs = parseint(fields[2])
                 if num_inputs > 4
                     error("the number of inputs in this version of read_plu is limited to 4")
                 end
             elseif fields[1][2] == 'o'
-                num_outputs = int(fields[2])
+                num_outputs = parseint(fields[2])
                 if num_outputs > 4
                     error("the number of outputs in this version of read_plu is limited to 4")
                 end
@@ -216,7 +197,7 @@ function read_plu(fname)
                 elseif f != "\r\n"
                     #@printf(" %#X",int(f))
                     if !input_flag
-                        push!(outputs,convert(BitString,int(f)))
+                        push!(outputs,convert(BitString, parseint(f)))
                     end
                 end
             end
