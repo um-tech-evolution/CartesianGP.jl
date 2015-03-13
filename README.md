@@ -57,18 +57,13 @@ $ vagrant up releases
 ```
 
 Launching the VMs will cause the test suite to run on both (unless you
-launched only one). The tests can be subsequently run again in the VMs like
-so:
+launched only one). To run the tests again, without starting an
+interactive SSH session to the VM, just run the following. Note that
+you have to specify either "releases" or "nightlies" (even if you
+brought up both VMs).
 
 ```
-$ vagrant ssh -c $'julia -e \'Pkg.clone("/vagrant", "CGP"); Pkg.test("CGP")\''
-```
-
-Or to run in just the release environment, for example (provided it
-was brought up):
-
-```
-$ vagrant ssh releases -c $'julia -e \'Pkg.clone("/vagrant", "CGP"); Pkg.test("CGP")\''
+$ vagrant ssh releases -c '/vagrant/runtests.sh'
 ```
 
 To shut down the VMs:
