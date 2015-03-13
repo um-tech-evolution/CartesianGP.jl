@@ -8,5 +8,6 @@ include("Chromosome.jl")
 include("Execute.jl")
 include("Mutation.jl")
 include("Goal.jl")
+include("Fitness.jl")
 
 end

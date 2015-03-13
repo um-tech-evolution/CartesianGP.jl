@@ -1,44 +1,62 @@
 using CGP
 using Base.Test
-include("../src/Goal.jl")
 
-# Tests of functions in src/Goal.jl
-verbose = false
+# Create some 2-input, 2-output goals, these should all be equivalent
+# to one another.
 
-# Test interleave and de_interleave
-# A 3-input 3-output goal packed interleaved goal
-g3int = GoalPacked(3,3,0o51403627,true)
-if verbose print("g3 interleaved: "); print_goal_octal(g3int) end
-# The non-interleaved version of g3int
-g3ni = GoalPacked(3,3,0xA50FC9,false)
-if verbose print("g3 non-interleaved:  "); print_goal_hex(g3ni) end
-@test de_interleave(g3int) == g3ni
-@test interleave(g3ni) == g3int
-@test interleave(de_interleave(g3int)) == g3int
+g2_u = Goal(2, (0b0010, 0b0001))
+g2_p = BasicPackedGoal(2, 2, 0b00010010)
+g2_i = InterleavedPackedGoal(2, 2, 0b00000110)
 
-# Test g_compose_f
-# The inverse of g3int
-g3inv = GoalPacked(3,3,0o02753164,true)
-# The 3-input 3-output identity function in packed interleaved format
-if verbose print("g3 inverse:  "); print_goal_octal(g3inv) end
-ident3 = GoalPacked(3,3,0o76543210,true)
-if verbose print("identity: "); print_goal_octal(ident3) end
-if verbose print("g3 compose h3: ");print_goal_octal(g_compose_f(g3int,ident3)) end
-@test g_compose_f(g3int,g3inv) == ident3
-if verbose print("h3 compose g3: ");print_goal_octal(g_compose_f(ident3,g3int)) end
-@test g_compose_f(g3inv,g3int) == ident3
+@test convert(BasicPackedGoal, g2_u) == g2_p
+@test convert(InterleavedPackedGoal, g2_u) == g2_i
 
-# Test pack and unpack
-# The unpacked version of g3ni
-g3unp = Goal(3,3,[0xC9,0x0F,0xA5])  #Note: truth_table components are in the opposite order of what is shown in print_goal
-if verbose print("g3 unpacked:    "); print_goal(g3unp) end
-@test isequal(unpack_goal(g3ni), g3unp)  # Note that == doesn't work.  
-@test pack_goal(g3unp)==g3ni
-@test isequal(unpack_goal(pack_goal(g3unp)),g3unp)
-@test pack_goal(unpack_goal(g3ni))==g3ni
+@test convert(Goal, g2_p) == g2_u
+@test convert(InterleavedPackedGoal, g2_p) == g2_i
 
-# test fitness
-#@test fitness(g3unp,g3unp.truth_table)==1.0
-#g3pert = GoalPacked(3,3,0xA40FC9,false)   # differs in one bit from g3ni, should have fitness 0.5
-#if verbose print("g3 perturbed by 1 bit: ");print_goal_hex(g3pert) end
-#@test fitness(unpack_goal(g3pert),g3unp.truth_table)==0.5
+@test convert(Goal, g2_i) == g2_u
+@test convert(BasicPackedGoal, g2_i) == g2_p
+
+@test Goal(2, (0b0000, 0b0000)) != g2_u
+@test BasicPackedGoal(2, 2, 0b00000000) != g2_p
+@test InterleavedPackedGoal(2, 2, 0b00000000) != g2_i
+
+@test_throws ErrorException g2_u == g2_p
+@test_throws ErrorException g2_p == g2_u
+@test_throws ErrorException g2_p == g2_i
+@test_throws ErrorException g2_i == g2_p
+@test_throws ErrorException g2_u == g2_i
+@test_throws ErrorException g2_i == g2_u
+
+# Create some 3-input 3-output goals, these should all be equivalent
+# to one another.
+
+g3_uh = Goal(3, (0xC9, 0x0F, 0xA5))  # hexadecimal version
+g3_ub = Goal(3, (0b11001001, 0b00001111, 0b10100101)) # equivalent binary version
+g3_ph = BasicPackedGoal(3, 3, 0xA50FC9)
+g3_io = InterleavedPackedGoal(3, 3, 0o51403627) # octal is most natural for this goal
+
+@test g3_ub == g3_uh # check that binary and hex versions are the same
+@test convert(BasicPackedGoal, g3_uh) == g3_ph
+@test convert(Goal, g3_ph) == g3_uh
+@test convert(InterleavedPackedGoal, g3_ph) == g3_io
+@test convert(BasicPackedGoal, g3_io) == g3_ph
+@test convert(Goal, g3_io) == g3_ub
+@test convert(Goal, g3_ph) == g3_ub
+
+# Create goals to test the composition of goals.
+
+g3_inv = InterleavedPackedGoal(3, 3, 0o02753164)  # compositional inverse of g3_io
+g3_ident = InterleavedPackedGoal(3, 3, 0o76543210) # compositional identity function
+@test compose(g3_io, g3_inv) == g3_ident
+@test compose(g3_inv, g3_io) == g3_ident
+@test compose(g3_io, g3_ident) == g3_io
+@test compose(g3_ident, g3_inv) == g3_inv
+
+# Test reading a PLU file.
+
+fname = "add1c.plu"
+add1c_goal = Goal(3, (0x96, 0xE8))
+add1c_plu_goal = read_plu(fname)
+
+@test read_plu(fname) == convert(BasicPackedGoal, add1c_goal)
