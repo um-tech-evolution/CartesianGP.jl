@@ -1,3 +1,3 @@
 #! /usr/bin/env sh
 
-julia -e 'Pkg.test("CGP")'
+julia -e 'Pkg.clone(pwd()); Pkg.test("CGP")'

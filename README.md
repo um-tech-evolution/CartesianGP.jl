@@ -11,6 +11,17 @@ perfectly suitable for other applications as well.
 
 ## Development
 
+### Tests
+
+Run the test suite by running the `runtests.sh` script. Alternately,
+from the `test` directory, issue `julia runtests.jl` (it is important
+that you start out in the `test` directory. You can also run the tests
+from within Julia:
+
+```
+julia> Pkg.clone(pwd()); Pkg.test("CGP")
+```
+
 ### Vagrant
 
 There is a [Vagrant](http://docs.vagrantup.com/) configuration file
