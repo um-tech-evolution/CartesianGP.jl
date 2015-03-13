@@ -47,6 +47,7 @@ function execute_chromosome(c::Chromosome)
     return BitString[x & mask for x = result]
 end
 
+# TODO: This function appears in a couple places, factor it into a utility file.
 # bitstring mask for one output of the packed representation
 function output_mask(num_inputs)
    one = convert(BitString, 0x1)
