@@ -9,6 +9,9 @@ MT for use in simulating the evolution of technology, though there is
 nothing specific to that application in the library so it is (will be)
 perfectly suitable for other applications as well.
 
+If you have questions or comments, please contact one of the authors
+(see `AUTHORS`).
+
 ## Development
 
 ### Tests
