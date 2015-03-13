@@ -1,9 +1,35 @@
 using CGP
 using Base.Test
 
+# Utility functions
+
+function chromosome_half_adder(numperlevel=2, numlevels=1, numlevelsback=1)
+    numinputs = 2
+    numoutputs = 2
+
+    p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
+    c = Chromosome(p)
+
+    c.inputs = [InputNode(1, true), InputNode(2, true)]
+    c.interiors = [InteriorNode(XOR, [(0, 1), (0, 2)], true) InteriorNode(AND, [(0, 1), (0, 2)], true)]
+    c.outputs = [OutputNode((1, 1)), OutputNode((1, 2))]
+
+    return c
+end
+
+# 1100
+# 1010
+
+function goal_half_adder()
+    g = Goal(2, (0b0110, 0b1000))
+
+    return g
+end
+
 include("Func.jl")
 include("Chromosome.jl")
 include("Goal.jl")
+include("Fitness.jl")
 
 numinputs = 2
 numoutputs = 1
