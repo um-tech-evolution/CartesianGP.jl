@@ -16,14 +16,13 @@ If you have questions or comments, please contact one of the authors
 
 ### Tests
 
-Run the test suite by running the `runtests.sh` script. Alternately,
-from the `test` directory, issue `julia runtests.jl` (it is important
-that you start out in the `test` directory. You can also run the tests
-from within Julia:
-
-```
-julia> Pkg.clone(pwd()); Pkg.test("CGP")
-```
+You can run the test suite against the code currenting in the working
+directory of the repository by running the `runtests.sh` script. If
+you want to test the library once you have installed it through
+Julia's package manager (using `Pkg.clone(...)` or otherwise) you can
+use `Pkg.test("CGP")` from within the Julia REPL. This will not,
+however, test any modifications you have made to the code that have
+not been committed, use the script for that.
 
 ### Vagrant
 
