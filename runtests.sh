@@ -8,9 +8,18 @@ usage() {
     echo "./runtests.sh [{nightlies,releases}]"
 }
 
+runtests() {
+    echo "Environment: $1"
+    vagrant ssh "$1" -c '/vagrant/runtests.sh'
+}
+
 if [ "$#" -eq 1 ]; then
     if [ "$1" == "nightlies" ] || [ "$1" == "releases" ]; then
-	vagrant ssh $1 -c '/vagrant/runtests.sh'
+	runtests $1
+	exit 0
+    elif [ "$1" == "all" ]; then
+	runtests "nightlies"
+	runtests "releases"
 	exit 0
     else
 	usage
