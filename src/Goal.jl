@@ -193,7 +193,6 @@ function read_plu(fname)
     num_outputs = 0
     outputs = BitString[]
     f = open(fname,"r")
-    println("reading file: ",fname)
     for line in eachline(f)
         fields = split(line,' ')
         if fields[1][1] == '.'
