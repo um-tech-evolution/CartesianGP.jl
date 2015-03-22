@@ -9,5 +9,6 @@ include("Execute.jl")
 include("Mutation.jl")
 include("Goal.jl")
 include("Fitness.jl")
+include("Evolution.jl")
 
 end

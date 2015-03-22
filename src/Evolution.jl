@@ -37,33 +37,34 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer, perfect::Float64)
     funcs = p.funcs
 
     pop = @parallel (vcat) for _ = 1:(μ + λ)
-        random_chromosome()
+        random_chromosome(p)
     end
     fit = @parallel (vcat) for c = pop
-        fitness(c, g)
+        fitness(c, goal)
     end
+    perm = sortperm(fit)
 
-    for t = 1:n
-        rank = sortperm(fit)
-
-        if fit[rank[1]] == perfect # TODO: This is inexact
-            return (pop[rank[1]], t)
+    for t = 1:gens
+        if fit[perm[1]] == perfect # TODO: This is inexact
+            return (pop[perm[1]], t)
         end
 
-        mutpop = @parallel (vcat) for x = pop[rank][1:λ]
+        mutpop = @parallel (vcat) for x = pop[perm][1:λ]
             mutate(deepcopy(x), funcs)
         end
         mutfit = @parallel (vcat) for x = mutpop
-            fitness(x, g)
+            fitness(x, goal)
         end
 
-        newpop = vcat(pop[rank][1:μ], mutpop)
-        newfit = vcat(fit[rank][1:μ], mutfit)
+        newpop = vcat(pop[perm][1:μ], mutpop)
+        newfit = vcat(fit[perm][1:μ], mutfit)
 
         pop = newpop
         fit = newfit
+
+        perm = sortperm(fit)
     end
 
-    return (pop[rank[1]], n)
+    return (pop[perm][1], gens)
 end
 
