@@ -11,7 +11,7 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer, perfect::Float64)
     fit = @parallel (vcat) for c = pop
         fitness(c, goal)
     end
-    perm = sortperm(fit)
+    perm = sortperm(fit, rev=true)
 
     for t = 1:gens
         if fit[perm[1]] == perfect # TODO: This is inexact
@@ -31,7 +31,7 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer, perfect::Float64)
         pop = newpop
         fit = newfit
 
-        perm = sortperm(fit)
+        perm = sortperm(fit, rev=true)
     end
 
     return (pop[perm][1], gens)
