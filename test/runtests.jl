@@ -3,6 +3,18 @@ using Base.Test
 
 # Utility functions
 
+function default_parameters()
+    numperlevel = 2
+    numlevels = 1
+    numlevelsback = 1
+    numinputs = 2
+    numoutputs = 2
+
+    p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
+
+    return p
+end
+
 function chromosome_half_adder(numperlevel=2, numlevels=1, numlevelsback=1)
     numinputs = 2
     numoutputs = 2
@@ -30,6 +42,7 @@ include("Func.jl")
 include("Chromosome.jl")
 include("Goal.jl")
 include("Fitness.jl")
+include("Evolution.jl")
 
 numinputs = 2
 numoutputs = 1
