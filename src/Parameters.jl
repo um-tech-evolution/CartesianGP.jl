@@ -1,4 +1,4 @@
-export Parameters, default_parameters
+export Parameters
 
 immutable Parameters
     mu::Integer
@@ -17,8 +17,8 @@ immutable Parameters
 end
 
 function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
-    mu = 1
-    lambda = 4
+    mu = 2
+    lambda = 2
     mutrate = 0.05
     targetfitness = 0.0
     funcs = default_funcs()
