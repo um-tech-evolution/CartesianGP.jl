@@ -114,8 +114,9 @@ function random_node_position(p::Parameters, minlevel::Integer, maxlevel::Intege
     return (level, index)
 end
 
-function random_chromosome(p::Parameters, funcs::Vector{Func})
+function random_chromosome(p::Parameters)
     c = Chromosome(p)
+    funcs = p.funcs
 
     for index = 1:length(c.inputs)
         c.inputs[index] = InputNode(index)

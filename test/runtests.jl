@@ -41,7 +41,7 @@ funcs = default_funcs()
 p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
 
 for _ = 1:100
-    c0 = random_chromosome(p, funcs)
+    c0 = random_chromosome(p)
     # Executing on these inputs tests all possible bit combinations for inputs
     execute_chromosome(c0, [convert(BitString, 0xC), convert(BitString, 0xA)])
 

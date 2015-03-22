@@ -12,6 +12,8 @@ immutable Parameters
     numperlevel::Integer
     numlevels::Integer
     numlevelsback::Integer
+
+    funcs::Vector{Func}
 end
 
 function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
@@ -19,7 +21,8 @@ function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback
     lambda = 4
     mutrate = 0.05
     targetfitness = 0.0
+    funcs = default_funcs()
 
-    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
+    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs)
 end
 
