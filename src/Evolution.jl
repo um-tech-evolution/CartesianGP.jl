@@ -1,9 +1,10 @@
 export mu_lambda
 
-function mu_lambda(p::Parameters, goal::Goal, gens::Integer, perfect::Float64)
+function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
     μ = p.mu
     λ = p.lambda
     funcs = p.funcs
+    perfect = p.targetfitness
 
     pop = @parallel (vcat) for _ = 1:(μ + λ)
         random_chromosome(p)
