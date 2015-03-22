@@ -1,7 +1,3 @@
-using CGP
-
-export output_mask, std_input_context
-
 # Utility function which returns bitstring mask for one output of the
 # packed representation.
 # Examples:  output_mask(2) returns  0b1111 = 0XF
