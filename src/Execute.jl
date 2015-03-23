@@ -1,4 +1,4 @@
-export execute_chromosome, output_mask
+export execute_chromosome
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString})
     node.active = true
@@ -46,16 +46,3 @@ function execute_chromosome(c::Chromosome)
 
     return BitString[x & mask for x = result]
 end
-
-# TODO: This function appears in a couple places, factor it into a utility file.
-# bitstring mask for one output of the packed representation
-function output_mask(num_inputs)
-   one = convert(BitString, 0x1)
-   mask = one
-   for i in 1:(2^num_inputs-1)
-      mask <<= 1
-      mask |= one
-   end
-   return mask
-end
-

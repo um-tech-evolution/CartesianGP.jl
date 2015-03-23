@@ -128,18 +128,6 @@ function convert{N}(::Type{InterleavedPackedGoal}, g::Goal{N})
     return convert(InterleavedPackedGoal, convert(BasicPackedGoal, g))
 end
 
-# Utility function which returns bitstring mask for one output of the
-# packed representation.
-function output_mask(num_inputs)
-    one = convert(BitString, 0x1)
-    mask = one
-    for i in 1:(2 ^ num_inputs - 1)
-        mask <<= 1
-        mask |= one
-    end
-    return mask
-end
-
 # Compose two goals g, and h. The number of outputs from h must be
 # equal to the number of inputs to g.
 function compose(g::InterleavedPackedGoal, h::InterleavedPackedGoal)
