@@ -1,12 +1,12 @@
 export mu_lambda
 
 function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
-    μ = p.mu
-    λ = p.lambda
+    mu = p.mu
+    lambda = p.lambda
     funcs = p.funcs
     perfect = p.targetfitness
 
-    pop = @parallel (vcat) for _ = 1:(μ + λ)
+    pop = @parallel (vcat) for _ = 1:(mu + lambda)
         random_chromosome(p)
     end
     fit = @parallel (vcat) for c = pop
@@ -19,15 +19,15 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
             return (pop[perm[1]], t)
         end
 
-        mutpop = @parallel (vcat) for x = pop[perm][1:λ]
+        mutpop = @parallel (vcat) for x = pop[perm][1:lambda]
             mutate(deepcopy(x), funcs)
         end
         mutfit = @parallel (vcat) for x = mutpop
             fitness(x, goal)
         end
 
-        newpop = vcat(pop[perm][1:μ], mutpop)
-        newfit = vcat(fit[perm][1:μ], mutfit)
+        newpop = vcat(pop[perm][1:mu], mutpop)
+        newfit = vcat(fit[perm][1:mu], mutfit)
 
         pop = newpop
         fit = newfit
