@@ -60,7 +60,7 @@ circuits are described on
 [Wikipedia](http://en.wikipedia.org/wiki/Adder_%28electronics%29). Here
 is the logic diagram of the half adder (taken from the linked page).
 
-![Half Adder](https://upload.wikimedia.org/wikipedia/commons/d/d9/Half_Adder.svg)
+![Half Adder](img/half-adder.png)
 
 The truth table for this circuit in our transposed notation is:
 
@@ -77,7 +77,7 @@ C is just the output of an AND gate, and the S row is the same as the
 
 The logic diagram for the full adder is:
 
-![Full Adder](https://upload.wikimedia.org/wikipedia/commons/6/69/Full-adder_logic_diagram.svg)
+![Full Adder](img/full-adder.png)
 
 ## Hexadecimal and Octal Notation
 
