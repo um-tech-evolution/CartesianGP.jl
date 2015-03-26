@@ -4,13 +4,14 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
     mu = p.mu
     lambda = p.lambda
     funcs = p.funcs
+    fitfunc = p.fitfunc
     perfect = p.targetfitness
 
     pop = @parallel (vcat) for _ = 1:(mu + lambda)
         random_chromosome(p)
     end
     fit = @parallel (vcat) for c = pop
-        fitness(c, goal)
+        fitness(c, goal, fitfunc)
     end
     perm = sortperm(fit, rev=true)
 
@@ -23,7 +24,7 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
             mutate(deepcopy(x), funcs)
         end
         mutfit = @parallel (vcat) for x = mutpop
-            fitness(x, goal)
+            fitness(x, goal, fitfunc)
         end
 
         newpop = vcat(pop[perm][1:mu], mutpop)

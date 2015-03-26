@@ -17,8 +17,9 @@ function parameters_half_adder()
     mutrate = 0.05
     targetfitness = 1.0
     funcs = default_funcs()
+    fitfunc = hamming_max
 
-    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs)
+    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
 end
 
 function goal_half_adder()
@@ -37,8 +38,9 @@ function parameters_full_adder()
     mutrate = 0.05
     targetfitness = 1.0
     funcs = default_funcs()
+    fitfunc = hamming_max
 
-    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs)
+    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
 end
 
 function goal_full_adder()

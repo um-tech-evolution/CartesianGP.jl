@@ -14,6 +14,7 @@ immutable Parameters
     numlevelsback::Integer
 
     funcs::Vector{Func}
+    fitfunc::Function
 end
 
 function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
@@ -22,7 +23,8 @@ function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback
     mutrate = 0.05
     targetfitness = 0.0
     funcs = default_funcs()
+    fitfunc = hamming_max
 
-    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs)
+    return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
 end
 
