@@ -22,8 +22,8 @@ function chromosome_half_adder(numperlevel=2, numlevels=1, numlevelsback=1)
     p = Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
     c = Chromosome(p)
 
-    c.inputs = [InputNode(1, true), InputNode(2, true)]
-    c.interiors = [InteriorNode(XOR, [(0, 1), (0, 2)], true) InteriorNode(AND, [(0, 1), (0, 2)], true)]
+    c.inputs = [InputNode(1), InputNode(2)]
+    c.interiors = [InteriorNode(XOR, [(0, 1), (0, 2)]) InteriorNode(AND, [(0, 1), (0, 2)])]
     c.outputs = [OutputNode((1, 1)), OutputNode((1, 2))]
 
     return c
