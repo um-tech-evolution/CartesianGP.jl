@@ -18,10 +18,10 @@ immutable Parameters
 end
 
 function Parameters(numinputs, numoutputs, numperlevel, numlevels, numlevelsback)
-    mu = 2
-    lambda = 2
+    mu = 1
+    lambda = 4
     mutrate = 0.05
-    targetfitness = 0.0
+    targetfitness = 1.0
     funcs = default_funcs()
     fitfunc = hamming_max
 

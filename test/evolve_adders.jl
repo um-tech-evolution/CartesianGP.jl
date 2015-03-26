@@ -5,18 +5,20 @@ using Base.Test
 
 # TODO: Add correctness tests
 
+# Half adder
+
 function parameters_half_adder()
-    numperlevel = 2
-    numlevels = 1
-    numlevelsback = 1
+    numperlevel = 1
+    numlevels = 2
+    numlevelsback = numlevels
     numinputs = 2
     numoutputs = 2
 
-    mu = 100
-    lambda = 100
+    mu = 1
+    lambda = 4
     mutrate = 0.05
     targetfitness = 1.0
-    funcs = default_funcs()
+    funcs = [AND, OR, XOR]
     fitfunc = hamming_max
 
     return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
@@ -26,18 +28,30 @@ function goal_half_adder()
     return Goal(2, (0b0110, 0b1000))
 end
 
+p = parameters_half_adder()
+g = goal_half_adder()
+n = 100
+r = mu_lambda(p, g, n)
+
+println(fitness(r[1], g))
+@assert fitness(r[1], g) == p.targetfitness
+@assert r[2] <= n
+print_chromosome(r[1])
+
+# Full adder
+
 function parameters_full_adder()
-    numperlevel = 3
-    numlevels = 3
-    numlevelsback = 2
+    numperlevel = 1
+    numlevels = 4
+    numlevelsback = numlevels
     numinputs = 3
     numoutputs = 2
 
-    mu = 1000
-    lambda = 1000
-    mutrate = 0.05
+    mu = 1
+    lambda = 4
+    mutrate = 0.1
     targetfitness = 1.0
-    funcs = default_funcs()
+    funcs = [AND, OR, XOR]
     fitfunc = hamming_max
 
     return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
@@ -46,15 +60,6 @@ end
 function goal_full_adder()
     return Goal(3, (0b10010110, 0b11101000))
 end
-
-p = parameters_half_adder()
-g = goal_half_adder()
-n = 100
-r = mu_lambda(p, g, n)
-
-@assert fitness(r[1], g) == p.targetfitness
-@assert r[2] <= n
-print_chromosome(r[1])
 
 p = parameters_full_adder()
 g = goal_full_adder()
