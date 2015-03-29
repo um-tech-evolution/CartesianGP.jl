@@ -1,5 +1,11 @@
 export mutate
 
+# There are problems with the mutate function defined here.
+
+function mutate(old_c::Chromosome)
+    return mutate(old_c, p.funcs)
+end
+
 function mutate(old_c::Chromosome, funcs::Vector{Func})
     p = old_c.params
     mutrate = p.mutrate
