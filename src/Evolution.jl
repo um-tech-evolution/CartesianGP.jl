@@ -1,3 +1,4 @@
+using CGP
 export mu_lambda
 
 function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
