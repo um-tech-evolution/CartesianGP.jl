@@ -2,7 +2,7 @@ export NodePosition, Node, InputNode, InteriorNode, OutputNode
 
 using Compat
 
-typealias NodePosition @compat Tuple{Integer, Integer}
+typealias NodePosition{T<:Integer} @compat Tuple{T, T}
 
 abstract Node
 
@@ -11,20 +11,21 @@ type InputNode <: Node
     active::Bool
 end
 
-function InputNode(index::Integer)
-    return InputNode(index, false)
-end
+InputNode(index::Integer) = InputNode(index, false)
 
 type InteriorNode <: Node
     func::Func
     inputs::Vector{NodePosition}
     active::Bool
+    cache::BitString
 end
 
-function InteriorNode(func::Func, inputs::Vector{NodePosition})
-    return InteriorNode(func, inputs, false)
-end
+InteriorNode(func::Func, inputs::Vector{NodePosition}) = InteriorNode(func, inputs, false, convert(BitString, 0))
 
 type OutputNode <: Node
     input::NodePosition
+    active::Bool
+    cache::BitString
 end
+
+OutputNode(input::NodePosition) = OutputNode(input, false, convert(BitString, 0))

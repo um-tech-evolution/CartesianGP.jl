@@ -6,19 +6,31 @@ function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString
 end
 
 function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitString})
-    func = node.func
-    args = map(node.inputs[1:func.arity]) do position
-        (level, index) = position
-        evaluate_node(c, c[level, index], context)
+    if ! node.active
+        func = node.func
+        args = map(node.inputs[1:func.arity]) do position
+            (level, index) = position
+            evaluate_node(c, c[level, index], context)
+        end
+        node.active = true
+        node.cache = func.func(args...)
     end
-    node.active = true
-    return func.func(args...)
+    return node.cache
 end
 
 function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitString})
-    (level, index) = node.input
-    return evaluate_node(c, c[level, index], context)
+    if ! node.active
+        node.active = true
+        (level, index) = node.input
+        node.cache = evaluate_node(c, c[level, index], context)
+    end
+    return node.cache
 end
+
+# TODO: Since we are caching the evaluation results we should no
+# longer expose the context since providing two different contexts for
+# the same chromosome will produce incorrect results the second time
+# around.
 
 function execute_chromosome(c::Chromosome, context::Vector{BitString})
     c.active_set = true
