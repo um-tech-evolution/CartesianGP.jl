@@ -1,6 +1,8 @@
 export NodePosition, Node, InputNode, InteriorNode, OutputNode
 
-typealias NodePosition (Integer, Integer)
+using Compat
+
+typealias NodePosition @compat Tuple{Integer, Integer}
 
 abstract Node
 

@@ -178,12 +178,12 @@ function read_plu(fname)
         fields = split(line,' ')
         if fields[1][1] == '.'
             if fields[1][2] == 'i'
-                num_inputs = parseint(fields[2])
+                num_inputs = parse(Int, fields[2])
                 if num_inputs > 4
                     error("the number of inputs in this version of read_plu is limited to 4")
                 end
             elseif fields[1][2] == 'o'
-                num_outputs = parseint(fields[2])
+                num_outputs = parse(Int, fields[2])
                 if num_outputs > 4
                     error("the number of outputs in this version of read_plu is limited to 4")
                 end
@@ -197,7 +197,7 @@ function read_plu(fname)
                 elseif f != "\r\n"
                     #@printf(" %#X",int(f))
                     if !input_flag
-                        push!(outputs,convert(BitString, parseint(f)))
+                        push!(outputs,convert(BitString, parse(Int, f)))
                     end
                 end
             end
