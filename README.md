@@ -9,6 +9,13 @@ MT for use in simulating the evolution of technology, though there is
 nothing specific to that application in the library so it is (will be)
 perfectly suitable for other applications as well.
 
+Note that the code should be considered pre-alpha at the moment,
+though we are making rapid progress. We will tag a release when we
+feel it is useful. Until then, feel free to take a look at the code
+and send us questions or submit pull requests (though you might want
+to consult with us first just to make sure you aren't duplicating
+effort).
+
 If you have questions or comments, please contact one of the authors
 (see `AUTHORS`).
 
@@ -55,15 +62,10 @@ the action to only one of the machines. So to bring up just the
 $ vagrant up releases
 ```
 
-Launching the VMs will cause the test suite to run on both (unless you
-launched only one). To run the tests again, without starting an
-interactive SSH session to the VM, just run the following. Note that
-you have to specify either "releases" or "nightlies" (even if you
-brought up both VMs).
-
-```
-$ vagrant ssh releases -c '/vagrant/runtests.sh'
-```
+An SSH session can then be opened with `vagrant ssh
+<releases|nightlies>`. However, the tests can be run on the VM without
+doing this. Just use `./runtests.sh <releases|nightlies|all>`. The VM
+must be running already for this to work.
 
 To shut down the VMs:
 
