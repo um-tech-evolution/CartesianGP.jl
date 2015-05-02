@@ -2,7 +2,7 @@ export NodePosition, Node, InputNode, InteriorNode, OutputNode
 
 using Compat
 
-typealias NodePosition{T<:Integer} @compat Tuple{T, T}
+typealias NodePosition @compat Tuple{Int, Int}
 
 abstract Node
 
