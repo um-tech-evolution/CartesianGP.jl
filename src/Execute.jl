@@ -1,10 +1,13 @@
-export execute_chromosome
+export execute_chromosome, get_number_active_nodes
 
 import CGP.output_mask
 import CGP.std_input_context
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString})
-    node.active = true
+    if ! node.active
+        node.active = true
+        c.number_active_nodes += 1
+    end
     return context[node.index]
 end
 
@@ -17,6 +20,7 @@ function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitStr
         end
         node.active = true
         node.cache = func.func(args...)
+        c.number_active_nodes += 1
     end
     return node.cache
 end
@@ -26,6 +30,7 @@ function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitStrin
         node.active = true
         (level, index) = node.input
         node.cache = evaluate_node(c, c[level, index], context)
+        c.number_active_nodes += 1
     end
     return node.cache
 end
