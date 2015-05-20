@@ -20,10 +20,11 @@ function std_input_context(num_inputs)
    std_in = Array(BitString,num_inputs)
    std_in[1] = 0b10
    for i in 2:num_inputs
-      std_in[i] = output_mask(i-1) << 2^(i-1)
-      for j in 1:(i-1)
-         std_in[j] $= std_in[j] << 2^(i-1)
+      for j in i:-1:2
+         std_in[j] = std_in[j-1] $ std_in[j-1] << 2^(i-1)
       end
+      std_in[1] = output_mask(i-1) << 2^(i-1)
    end
    return std_in
 end
+
