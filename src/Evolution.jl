@@ -22,7 +22,7 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
         end
 
         mutpop = @parallel (vcat) for x = pop[perm][1:lambda]
-            mutate(deepcopy(x), funcs)
+            mutate(x, funcs)
         end
         mutfit = @parallel (vcat) for x = mutpop
             fitness(x, goal, fitfunc)
