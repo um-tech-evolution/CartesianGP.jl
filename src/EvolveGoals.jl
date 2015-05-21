@@ -1,9 +1,12 @@
 # Evolves all single-output 2-input and single-output 3-input goals.
 # The chromosome length (numlevels) and the number of runs per goal can be specified.
-# The randome number seed can also be specified.
+# The random number seed can also be specified.
+# To evolve all 2-input goals, run wrs2() with the appropriate arguments
+# To evolve all 3-input goals, run wrs3() with the appropriate arguments
 using CGP
 using Dates
 
+# Primitive functions used in this simulation.  Same as those used by Raman and Wagner.
 raman_funcs = [AND, OR, XOR, NAND, NOR]
 
 function Params(numinputs, numoutputs, numperlevel, numlevels, numlevelsback, mutrate, funcs )
@@ -11,10 +14,14 @@ function Params(numinputs, numoutputs, numperlevel, numlevels, numlevelsback, mu
     lambda = 4
     targetfitness = 1.0
     fitfunc = hamming_max
-
     return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
 end
 
+# Runs mu_lambda to evolve the goals on goal_list.  
+# Does runs_per_goal evolutions of each goal.
+# For each run, the output is the goal, the number of generations, and the number of active nodes.
+# Creates a CSV file with the parameter settings followed by the above described output for each run.
+# Also writes this information to stdout so that the user can see the progress made.
 function evolve_goals( outstream::IOStream, summary::String, p::Parameters, goal_list, max_gens, runs_per_goal, rseed)
     println(outstream,summary)
     println(outstream,Dates.now())
@@ -62,6 +69,12 @@ function evolve_goals( outstream::IOStream, summary::String, p::Parameters, goal
     outstream
 end
 
+# This is the high-level function that is called to evolve all 2-input 1-output goals
+# filename is the name of the CSV output file.
+# rseed  is the random number seed.
+# numlevels is the number of levels in the chromosome.  There is 1 interior node per interior node level.
+# levelsback is set to numlevels.
+# runs_per_goal is the number of runs made per goal.
 function wrs2(filename::ASCIIString, rseed, numlevels, runs_per_goal )
     X0 = convert(BitString,0x0)
     XF = convert(BitString,0xF)
@@ -74,6 +87,12 @@ function wrs2(filename::ASCIIString, rseed, numlevels, runs_per_goal )
     close(ost)
 end
 
+# This is the high-level function that is called to evolve all 3-input 1-output goals
+# filename is the name of the CSV output file.
+# rseed  is the random number seed.
+# numlevels is the number of levels in the chromosome.  There is 1 interior node per interior node level.
+# levelsback is set to numlevels.
+# runs_per_goal is the number of runs made per goal.
 function wrs3(filename::ASCIIString, rseed, numlevels, runs_per_goal )
     X0 = convert(BitString,0x0)
     XFF = convert(BitString,0xFF)
