@@ -41,13 +41,14 @@ function evolve_goals( outstream::IOStream, summary::String, p::Parameters, goal
     println(outstream,"funcs: ",reshape([f.name for f in p.funcs],(1,length(p.funcs))))
     println(outstream,"max gens:      ",max_gens),
     println(outstream,"runs_per_goal: ",runs_per_goal),
-    outstream
+    println(outstream,"goal, gens, #active")   # header line for CSV
     srand(rseed)
     sum_gens = 0
     for g in goal_list
         for r in 1:runs_per_goal
-            (ch,gens) = mu_lambda(p,g,max_gens)
-            ech = execute_chromosome(ch)
+            #(ch,gens) = mu_lambda(p,g,max_gens)
+            (ch,gens) = evolve(p,g,max_gens)
+            #ech = execute_chromosome(ch)
             #println(outstream,"ech: ",ech)
             #println("ech: ",ech)
             #print_chromosome(ch)
@@ -62,6 +63,8 @@ function evolve_goals( outstream::IOStream, summary::String, p::Parameters, goal
             println(gens,",",num_active_nodes)
             #println()
         end
+        flush(outstream)
+        flush(STDOUT)
     end
     average_gens = convert(FloatingPoint,sum_gens)/length(goal_list)/runs_per_goal
     println(outstream,"average gens: ",average_gens)
