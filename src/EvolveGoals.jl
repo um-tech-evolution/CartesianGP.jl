@@ -3,19 +3,37 @@
 # The random number seed can also be specified.
 # To evolve all 2-input goals, run run_evolve_goals() with the second argument equal to 2
 # To evolve all 3-input goals, run run_evolve_goals() with the second argument equal to 3
+# See below for a more detailed example of how to run  run_evolve_goals().
 # To run using multiple processors, start Julia using the "-p" option, such as "julia -p 4"
 #   to start with 4 processors
 using CGP
 using Dates
 
-# A high-level function to run evolve_goals
-# it sets the summary to the filename, and num_levels and max_gens to default values
-function run_evolve_goals(filename,numinputs,runs_per_goal,rseed)
-    outd = "out/"
-    ost = open("$outd$filename","w")
-    num_levels = numinputs == 2 ? 10 : 40
+# macro similar to the @time macro except that it writes to the ost stream rather than the stdout stream.
+# This definition must precede its use below.
+macro otime(ex)
+           quote
+               local t0 = time()
+               local val = $(esc(ex))
+               local t1 = time()
+               println(ost,"elapsed time: ", t1-t0, " seconds")
+               val
+           end
+       end
+
+# A high-level function to run function evolve_goals.
+# it sets the summary to the filename, and max_gens to default values
+# Example:  run_evolve_goals("prun",2,13,10,20)   
+#   calls "evolve_goals" with numinputs=2, rseed=13,numlevels=10,runs_per_goal=20
+#   and the output going to the file: prun2_13_10_20.csv
+function run_evolve_goals(filename_prefix,numinputs,rseed,num_levels,runs_per_goal)
+    directory = "out/"  # subdirectory for output CSV file
+    filetype = ".csv"   # file extension
+    underscore = "_"
+    filename = "$directory$filename_prefix$numinputs$underscore$rseed$underscore$num_levels$underscore$runs_per_goal$filetype"
+    ost = open(filename,"w")
     max_gens = numinputs == 2 ? 10000 : 50000
-    ost = evolve_goals(ost,filename,numinputs,num_levels,runs_per_goal,max_gens,rseed)
+    @otime ost = evolve_goals(ost,filename,numinputs,num_levels,runs_per_goal,max_gens,rseed)
     close(ost)
 end
 
@@ -85,6 +103,7 @@ function evolve_goals( outstream::IOStream, summary::String, num_inputs, num_lev
     println(outstream,summary)
     println(outstream,Dates.now())
     print(outstream,  "host:          ",readall(`hostname`))
+    println(outstream,"num processes: ",length(procs()))
     print(outstream,readall(`julia -v`))
     println(outstream,"num inputs:    ",p.numinputs)
     println(outstream,"num outputs:   ",p.numoutputs)
