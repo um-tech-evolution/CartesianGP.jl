@@ -1,6 +1,6 @@
 import Base.getindex
 
-export Chromosome, getindex, print_chromosome, random_chromosome, get_number_active_nodes
+export Chromosome, getindex, print_chromosome, random_chromosome
 
 type Chromosome
     params::Parameters
@@ -9,13 +9,6 @@ type Chromosome
     outputs::Vector{OutputNode}
     active_set::Bool
     number_active_nodes::Integer
-end
-
-# Returns the number of active nodes in the chromosome if active_set == true.
-# Should return 0 if active_set == false.
-# Note:  The active status of nodes is only determined when the chromosome is executed.
-function get_number_active_nodes(c::Chromosome)
-    c.number_active_nodes
 end
 
 function Chromosome(p::Parameters)
