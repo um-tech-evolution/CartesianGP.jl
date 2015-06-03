@@ -58,7 +58,7 @@ end
 # This is the function used by pmap to evolve each goal in goal_list
 @everywhere function pevolve(g)
     (ch,gens) = evolve(p,g,max_gens)
-    n = get_number_active_nodes(ch)
+    n = ch.number_active_nodes
     (g.truth_table,gens,n)
 end
 

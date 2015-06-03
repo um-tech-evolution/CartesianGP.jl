@@ -1,4 +1,4 @@
-export execute_chromosome, get_number_active_nodes
+export execute_chromosome
 
 import CGP.output_mask
 import CGP.std_input_context
