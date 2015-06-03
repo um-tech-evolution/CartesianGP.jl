@@ -1,6 +1,10 @@
 using CGP
 export mu_lambda
 
+# Executes mu-lambda evolution relative to goal starting with a random population of chromosomes
+# mu is the number of parents and lambda is the number of children in each generation
+# mu and lambda are components of the parameters
+# gens is the maximum number of generations run
 function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
     mu = p.mu
     lambda = p.lambda
@@ -8,29 +12,18 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
     fitfunc = p.fitfunc
     perfect = p.targetfitness
 
-    pop = @parallel (vcat) for _ = 1:(mu + lambda)
-        random_chromosome(p)
-    end
-    fit = @parallel (vcat) for c = pop
-        fitness(c, goal, fitfunc)
-    end
+    pop = [random_chromosome(p) for _ in 1:(mu+lambda) ]
+    fit = [fitness(c,goal,fitfunc) for c in pop ]
     perm = sortperm(fit, rev=true)
 
     for t = 1:gens
-        if fit[perm[1]] == perfect # TODO: This is inexact
+        if fit[perm[1]] == perfect 
             return (pop[perm[1]], t)
         end
-
-        mutpop = @parallel (vcat) for x = pop[perm][1:lambda]
-            mutate(x, funcs)
-        end
-        mutfit = @parallel (vcat) for x = mutpop
-            fitness(x, goal, fitfunc)
-        end
-
+        mutpop = [mutate(deepcopy(x),funcs) for x in pop[perm][mu+1:mu+lambda]]
+        mutfit = [fitness(x, goal, fitfunc) for x in mutpop]
         newpop = vcat(pop[perm][1:mu], mutpop)
         newfit = vcat(fit[perm][1:mu], mutfit)
-
         pop = newpop
         fit = newfit
 
