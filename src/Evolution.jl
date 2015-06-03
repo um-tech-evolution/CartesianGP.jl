@@ -20,7 +20,7 @@ function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
         if fit[perm[1]] == perfect 
             return (pop[perm[1]], t)
         end
-        mutpop = [mutate(deepcopy(x),funcs) for x in pop[perm][mu+1:mu+lambda]]
+        mutpop = [mutate(x,funcs) for x in pop[perm][mu+1:mu+lambda]]
         mutfit = [fitness(x, goal, fitfunc) for x in mutpop]
         newpop = vcat(pop[perm][1:mu], mutpop)
         newfit = vcat(fit[perm][1:mu], mutfit)
