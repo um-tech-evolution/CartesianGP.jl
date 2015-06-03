@@ -27,4 +27,3 @@ function std_input_context(num_inputs)
    end
    return std_in
 end
-
