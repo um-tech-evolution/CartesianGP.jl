@@ -10,7 +10,6 @@ include("Fitness.jl")
 include("Mutate.jl")
 include("Execute.jl")
 include("Evolution.jl")
-include("Evolve.jl")
 include("Utilities.jl")
 
 end
