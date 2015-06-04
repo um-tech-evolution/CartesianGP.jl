@@ -48,7 +48,7 @@ function execute_chromosome(c::Chromosome)
     mask = output_mask(params.numinputs)
 
     ctx = std_input_context(params.numinputs)
-    result = execute_chromosome(c, std_input_context(params.numinputs))
+    result = execute_chromosome(c, ctx)
 
     return BitString[x & mask for x = result]
 end
