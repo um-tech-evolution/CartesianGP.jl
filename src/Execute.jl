@@ -1,8 +1,5 @@
 export execute_chromosome
 
-import CGP.output_mask
-import CGP.std_input_context
-
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString})
     if ! node.active
         node.active = true
