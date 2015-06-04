@@ -18,7 +18,7 @@ c0.interiors = [InteriorNode(XOR, [(0, 1), (0, 2)]) InteriorNode(AND, [(0, 1), (
 c0.outputs = [OutputNode((1, 1)), OutputNode((1, 2))]
 
 @test execute_chromosome(c0) == BitString[0x6,0x8]
-@test get_number_active_nodes(c0) == 6
+@test c0.number_active_nodes == 6
 
 numinputs1 = 2
 numoutputs1 = 2
@@ -38,7 +38,7 @@ c1.interiors[4,1] = InteriorNode(AND, [(1, 1), (0, 2)])
 c1.interiors[5,1] = InteriorNode(AND, [(2, 1), (0, 2)])
 c1.outputs = [OutputNode((5, 1)),OutputNode((4,1))]
 @test execute_chromosome(c1) == BitString[0x2,0xa]
-@test get_number_active_nodes(c1) == 8
+@test c1.number_active_nodes == 8
 @test c1.interiors[1,1].active == true
 @test c1.interiors[2,1].active == true
 @test c1.interiors[3,1].active == false
