@@ -29,7 +29,7 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
     end
 
     new_c = Chromosome(p)
-    new_c.active_set = false
+    #new_c.active_set = false
 
     # Choose the genes that will be modified, and store their numbers in the array genes_to_mutate
     genes_to_mutate = Array(Int,num_mutations)
@@ -46,8 +46,8 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
 
     # Input nodes
     for i = 1:numinputs
-        new_c.inputs[i] = deepcopy(old_c.inputs[i])
-        new_c.inputs[i].active = false
+        new_c.inputs[i] = old_c.inputs[i]
+        #new_c.inputs[i].active = false
     end
 
     gene_index = 1
@@ -62,8 +62,8 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
             # check if none of the genes in node will be mutated
             if genes_to_mutate_index > length(genes_to_mutate) || gene_index + old_func.arity < genes_to_mutate[genes_to_mutate_index]
                 # no mutations in this node
-                new_c.interiors[level, index] = deepcopy(old_c.interiors[level, index])
-                new_c.interiors[level, index].active = false
+                new_c.interiors[level, index] = old_c.interiors[level, index]
+                #new_c.interiors[level, index].active = false
                 gene_index += 1+old_func.arity
                 continue
             end   
@@ -114,10 +114,10 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
             genes_to_mutate_index += 1
             (level, index) = random_node_position(p, minlevel, maxlevel)
             new_c.outputs[i] = OutputNode((level, index))
-            new_c[level, index].active = false
+            #new_c[level, index].active = false
         else
-            new_c.outputs[i] = deepcopy(old_c.outputs[i])
-            new_c.outputs[i].active = false
+            new_c.outputs[i] = old_c.outputs[i]
+            #new_c.outputs[i].active = false
         end
         gene_index += 1
     end # for i =

@@ -8,24 +8,24 @@ abstract Node
 
 type InputNode <: Node
     index::Integer
-    active::Bool
+    #active::Bool
 end
 
-InputNode(index::Integer) = InputNode(index, false)
+#InputNode(index::Integer) = InputNode(index, false)
 
 type InteriorNode <: Node
     func::Func
     inputs::Vector{NodePosition}
-    active::Bool
-    cache::BitString
+    #active::Bool
+    #cache::BitString
 end
 
-InteriorNode(func::Func, inputs::Vector{NodePosition}) = InteriorNode(func, inputs, false, convert(BitString, 0))
+#InteriorNode(func::Func, inputs::Vector{NodePosition}) = InteriorNode(func, inputs, false, convert(BitString, 0))
 
 type OutputNode <: Node
     input::NodePosition
-    active::Bool
-    cache::BitString
+    #active::Bool
+    #cache::BitString
 end
 
-OutputNode(input::NodePosition) = OutputNode(input, false, convert(BitString, 0))
+#OutputNode(input::NodePosition) = OutputNode(input, false, convert(BitString, 0))

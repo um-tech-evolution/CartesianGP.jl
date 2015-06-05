@@ -58,7 +58,8 @@ end
 # This is the function used by pmap to evolve each goal in goal_list
 @everywhere function p_mu_lambda(g)
     (ch,gens) = mu_lambda(p,g,max_gens)
-    n = ch.number_active_nodes
+    #n = ch.number_active_nodes
+    n = 0
     (g.truth_table,gens,n)
 end
 
