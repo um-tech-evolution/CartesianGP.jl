@@ -1,7 +1,10 @@
 export execute_chromosome
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString})
-    node.active = true
+    if ! node.active
+        node.active = true
+        c.number_active_nodes += 1
+    end
     return context[node.index]
 end
 
@@ -14,6 +17,7 @@ function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitStr
         end
         node.active = true
         node.cache = func.func(args...)
+        c.number_active_nodes += 1
     end
     return node.cache
 end
@@ -23,6 +27,7 @@ function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitStrin
         node.active = true
         (level, index) = node.input
         node.cache = evaluate_node(c, c[level, index], context)
+        c.number_active_nodes += 1
     end
     return node.cache
 end
@@ -37,24 +42,13 @@ function execute_chromosome(c::Chromosome, context::Vector{BitString})
     return BitString[evaluate_node(c, node, context) for node = c.outputs]
 end
 
-# Supplies the standard context for up to 4 inputs
+# Executes chrososome using the standard input context
 function execute_chromosome(c::Chromosome)
     params = c.params
     mask = output_mask(params.numinputs)
 
-    if params.numinputs == 1
-        ctx = [0b10]
-    elseif params.numinputs == 2
-        ctx = [0b1100, 0b1010]
-    elseif params.numinputs == 3
-        ctx = [0b11110000, 0b11001100, 0b10101010]
-    elseif params.numinputs == 4
-        ctx = [0b1111111100000000, 0b1111000011110000, 0b1100110011001100, 0b1010101010101010]
-    else
-        error("Too many inputs, max is 4")
-    end
-
-    result = execute_chromosome(c, BitString[x for x = ctx])
+    ctx = std_input_context(params.numinputs)
+    result = execute_chromosome(c, ctx)
 
     return BitString[x & mask for x = result]
 end

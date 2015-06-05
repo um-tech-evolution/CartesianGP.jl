@@ -8,6 +8,7 @@ type Chromosome
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
     active_set::Bool
+    number_active_nodes::Integer
 end
 
 function Chromosome(p::Parameters)
@@ -16,8 +17,9 @@ function Chromosome(p::Parameters)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
     active_set = false
+    number_active_nodes = 0
 
-    return Chromosome(p, inputs, interiors, outputs, active_set)
+    return Chromosome(p, inputs, interiors, outputs, active_set, number_active_nodes)
 end
 
 function getindex(c::Chromosome, level::Integer, index::Integer)
@@ -67,8 +69,8 @@ function print_chromosome(c::Chromosome, active_only::Bool)
     end
 
     # Output nodes
-    active = "+"
     for i = 1:length(c.outputs)
+        active = c.outputs[i].active ? "+" : (active_set ? "*" : "?")
         print("[", c.outputs[i].input, "out", i, active, "] ")
     end
     println()
