@@ -19,6 +19,15 @@ effort).
 If you have questions or comments, please contact one of the authors
 (see `AUTHORS`).
 
+## Examples
+
+The `examples/` directory contains (or will soon contain) some
+examples of using CGP.jl to evolve actual circuits. These can be used
+as blueprints for implementing your own simulations. Right now the
+example code is pretty rough, but it will improve over time and will
+eventually include comments and documentation to help with getting
+started.
+
 ## Development
 
 ### Tests
