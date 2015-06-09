@@ -9,7 +9,6 @@ function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitStr
     args = map(node.inputs[1:func.arity]) do position
         (level, index) = position
         evaluate_node(c, c[level, index], context)
-    end
 
     return func.func(args...)
 end
