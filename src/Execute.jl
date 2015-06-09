@@ -1,38 +1,22 @@
 export execute_chromosome
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString})
-    #=
-    if ! node.active
-        node.active = true
-        c.number_active_nodes += 1
-    end
-    =#
     return context[node.index]
 end
 
 function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitString})
-    #if ! node.active
-        func = node.func
-        args = map(node.inputs[1:func.arity]) do position
-            (level, index) = position
-            evaluate_node(c, c[level, index], context)
-        end
-        #node.active = true
-        #node.cache = func.func(args...)
-        #c.number_active_nodes += 1
-    #end
-    #return node.cache
+    func = node.func
+    args = map(node.inputs[1:func.arity]) do position
+        (level, index) = position
+        evaluate_node(c, c[level, index], context)
+    end
+
     return func.func(args...)
 end
 
 function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitString})
-    #if ! node.active
-        #node.active = true
-        (level, index) = node.input
-        #node.cache = evaluate_node(c, c[level, index], context)
-        #c.number_active_nodes += 1
-    #end
-    #return node.cache
+    (level, index) = node.input
+
     return evaluate_node(c, c[level, index], context)
 end
 
@@ -42,7 +26,6 @@ end
 # around.
 
 function execute_chromosome(c::Chromosome, context::Vector{BitString})
-    #c.active_set = true
     return BitString[evaluate_node(c, node, context) for node = c.outputs]
 end
 
