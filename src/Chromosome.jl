@@ -7,8 +7,6 @@ type Chromosome
     inputs::Vector{InputNode}
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
-    #active_set::Bool
-    #number_active_nodes::Integer
 end
 
 function Chromosome(p::Parameters)
@@ -16,10 +14,7 @@ function Chromosome(p::Parameters)
     interiors = Array(InteriorNode, p.numlevels, p.numperlevel)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
-    #active_set = false
-    #number_active_nodes = 0
 
-    #return Chromosome(p, inputs, interiors, outputs, active_set, number_active_nodes)
     return Chromosome(p, inputs, interiors, outputs )
 end
 
