@@ -15,7 +15,7 @@ function Chromosome(p::Parameters)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
 
-    return Chromosome(p, inputs, interiors, outputs )
+    return Chromosome(p, inputs, interiors, outputs)
 end
 
 function getindex(c::Chromosome, level::Integer, index::Integer)
