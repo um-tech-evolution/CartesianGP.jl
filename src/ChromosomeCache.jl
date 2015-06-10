@@ -6,13 +6,23 @@ type ChromosomeCache
     params::Parameters
     inputs::Vector{InputNodeCache}
     interiors::Matrix{InteriorNodeCache}
-    outputs::Vector{OuputNodeCache}
+    outputs::Vector{OutputNodeCache}
 end
 
-function ChromosomeCache(p::Parameters)
-    inputs = Array(InputNodeCache, p.numinputs)
+function ChromosomeCache(p::Parameters, fill::Bool = false )
     interiors = Array(InteriorNodeCache, p.numlevels, p.numperlevel)
-    outputs = Array(OutputNodeCache, p.numoutputs)
+    if fill
+        inputs = [ InputNodeCache() for i in 1:p.numinputs ]
+        outputs = [ OutputNodeCache() for i in 1:p.numoutputs ]
+        for i in 1:p.numlevels
+            for j in 1:p.numperlevel
+                interiors[i,j] = InteriorNodeCache()
+            end
+        end
+    else
+        inputs = Array(InputNodeCache, p.numinputs)
+        outputs = Array(OutputNodeCache, p.numoutputs)
+    end
 
     return ChromosomeCache(p, inputs, interiors, outputs)
 end

@@ -7,6 +7,8 @@ type Chromosome
     inputs::Vector{InputNode}
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
+    has_cache::Bool
+    cache::ChromosomeCache
 end
 
 function Chromosome(p::Parameters)
@@ -14,8 +16,10 @@ function Chromosome(p::Parameters)
     interiors = Array(InteriorNode, p.numlevels, p.numperlevel)
     outputs = Array(OutputNode, p.numoutputs)
     fitness = 0.0
+    has_cache = false
+    chc = ChromosomeCache(p,true)
 
-    return Chromosome(p, inputs, interiors, outputs)
+    return Chromosome(p, inputs, interiors, outputs, has_cache, chc )
 end
 
 function getindex(c::Chromosome, level::Integer, index::Integer)
