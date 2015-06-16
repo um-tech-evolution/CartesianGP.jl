@@ -7,19 +7,20 @@ type Chromosome
     inputs::Vector{InputNode}
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
-    active_set::Bool
-    number_active_nodes::Integer
+    has_cache::Bool
+    cache::Union(Nothing,ChromosomeCache)  # If has_cache is false, then cache should be nothing.
 end
 
-function Chromosome(p::Parameters)
+function Chromosome(p::Parameters,use_cache::Bool=false)
     inputs = Array(InputNode, p.numinputs)
     interiors = Array(InteriorNode, p.numlevels, p.numperlevel)
     outputs = Array(OutputNode, p.numoutputs)
-    fitness = 0.0
-    active_set = false
-    number_active_nodes = 0
-
-    return Chromosome(p, inputs, interiors, outputs, active_set, number_active_nodes)
+    if use_cache
+        chc = ChromosomeCache(p,use_cache)
+    else
+        chc = nothing
+    end
+    return Chromosome(p, inputs, interiors, outputs, use_cache, chc )
 end
 
 function getindex(c::Chromosome, level::Integer, index::Integer)
@@ -35,17 +36,23 @@ function getindex(c::Chromosome, level::Integer, index::Integer)
 end
 
 # Prints the chromosome in a compact text format (on one line).  Active notes
-# are indicated with a "+" and inactive notes with a "*".  If the chromosome
-# has not been evaluated, the active field is set to "?" since the status of
-# the nodes (with the exception of output nodes) is unknown.  If active_only is
+# are indicated with a "+" and inactive notes with a "*".  If active_only is
 # true, then only the active notes are shown.
-function print_chromosome(c::Chromosome, active_only::Bool)
-    active_set = c.active_set
+# TO DO:  A version that prints to a stream and a version that prints to a string
+function print_chromosome(c::Chromosome, active_only::Bool=false)
+    has_cache_incoming = c.has_cache
+    if ! c.has_cache
+        c.cache = ChromosomeCache(c.params,true)
+        c.has_cache = true
+    end
+    if ! c.cache.outputs[1].active  # will be true if chromosome has been executed
+        execute_chromosome(c) # execute chromosome so that active nodes will be determined
+    end
 
     # Input nodes
     for i = 1:length(c.inputs)
-        if c.inputs[i].active || !active_only
-            active = c.inputs[i].active ? "+" : (active_set ? "*" : "?")
+        if c.cache.inputs[i].active || !active_only
+            active = c.cache.inputs[i].active ? "+" : "*"
             print("[in", i, active, "] ")
         end
     end
@@ -53,8 +60,8 @@ function print_chromosome(c::Chromosome, active_only::Bool)
     # Interior nodes
     for i = 1:c.params.numlevels
         for j = 1:c.params.numperlevel
-            if c.interiors[i,j].active || !active_only
-                active = c.interiors[i,j].active ? "+" : (active_set ? "*" : "?")
+            if c.cache.interiors[i,j].active || !active_only
+                active = c.cache.interiors[i,j].active ? "+" : "*"
                 print("[")
                 for k = 1:length(c.interiors[i,j].inputs)
                     if c.interiors[i,j].inputs[k][1] == 0
@@ -70,15 +77,12 @@ function print_chromosome(c::Chromosome, active_only::Bool)
 
     # Output nodes
     for i = 1:length(c.outputs)
-        active = c.outputs[i].active ? "+" : (active_set ? "*" : "?")
+        active = c.cache.outputs[i].active ? "+" : "*"
         print("[", c.outputs[i].input, "out", i, active, "] ")
     end
     println()
+    c.has_cache = has_cache_incoming  # reset to original status
     return
-end
-
-function print_chromosome(c::Chromosome)
-    print_chromosome(c, false)
 end
 
 function first_in_level(p::Parameters, level::Integer)
@@ -116,12 +120,12 @@ function random_node_position(p::Parameters, minlevel::Integer, maxlevel::Intege
     return (level, index)
 end
 
-function random_chromosome(p::Parameters )
-    return random_chromosome(p, p.funcs)
+function random_chromosome(p::Parameters, use_cache::Bool=false )
+    return random_chromosome(p, p.funcs,use_cache)
 end
 
-function random_chromosome(p::Parameters, funcs::Vector{Func})
-    c = Chromosome(p)
+function random_chromosome(p::Parameters, funcs::Vector{Func}, use_cache::Bool=false)
+    c = Chromosome(p,use_cache)
 
     for index = 1:length(c.inputs)
         c.inputs[index] = InputNode(index)

@@ -1,35 +1,55 @@
 export execute_chromosome
 
 function evaluate_node(c::Chromosome, node::InputNode, context::Vector{BitString})
-    if ! node.active
-        node.active = true
-        c.number_active_nodes += 1
+    return context[node.index]
+end
+
+function evaluate_node(c::Chromosome, node::InputNode, cache_node::InputNodeCache, context::Vector{BitString})
+    if ! cache_node.active
+        cache_node.active = true
+        c.cache.number_active_nodes += 1
     end
     return context[node.index]
 end
 
 function evaluate_node(c::Chromosome, node::InteriorNode, context::Vector{BitString})
-    if ! node.active
+    func = node.func
+    args = map(node.inputs[1:func.arity]) do position
+        (level, index) = position
+        evaluate_node(c, c[level, index], context)
+    end
+
+    return func.func(args...)
+end
+
+function evaluate_node(c::Chromosome, node::InteriorNode, cache_node::InteriorNodeCache, context::Vector{BitString})
+    if ! cache_node.active
         func = node.func
         args = map(node.inputs[1:func.arity]) do position
             (level, index) = position
-            evaluate_node(c, c[level, index], context)
+            evaluate_node(c, c[level, index], c.cache[level,index], context)
         end
-        node.active = true
-        node.cache = func.func(args...)
-        c.number_active_nodes += 1
+        cache_node.active = true
+        cache_node.cache = func.func(args...)
+        c.cache.number_active_nodes += 1
     end
-    return node.cache
+    return cache_node.cache
 end
 
 function evaluate_node(c::Chromosome, node::OutputNode, context::Vector{BitString})
-    if ! node.active
-        node.active = true
+    (level, index) = node.input
+
+    return evaluate_node(c, c[level, index], context)
+end
+
+function evaluate_node(c::Chromosome, node::OutputNode, cache_node::OutputNodeCache, context::Vector{BitString})
+    if ! cache_node.active
+        cache_node.active = true
         (level, index) = node.input
-        node.cache = evaluate_node(c, c[level, index], context)
-        c.number_active_nodes += 1
+        cache_node.cache = evaluate_node(c, c[level, index], c.cache[level,index], context)
+        c.cache.number_active_nodes += 1
     end
-    return node.cache
+    return cache_node.cache
 end
 
 # TODO: Since we are caching the evaluation results we should no
@@ -38,8 +58,11 @@ end
 # around.
 
 function execute_chromosome(c::Chromosome, context::Vector{BitString})
-    c.active_set = true
-    return BitString[evaluate_node(c, node, context) for node = c.outputs]
+    if c.has_cache
+        return BitString[evaluate_node(c, c.outputs[i], c.cache.outputs[i], context) for i in 1:length(c.outputs)]
+    else
+        return BitString[evaluate_node(c, node, context) for node = c.outputs]
+    end
 end
 
 # Executes chrososome using the standard input context

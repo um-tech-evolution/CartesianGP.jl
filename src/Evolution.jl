@@ -5,14 +5,14 @@ export mu_lambda
 # mu is the number of parents and lambda is the number of children in each generation
 # mu and lambda are components of the parameters
 # gens is the maximum number of generations run
-function mu_lambda(p::Parameters, goal::Goal, gens::Integer)
+function mu_lambda(p::Parameters, goal::Goal, gens::Integer, use_cache::Bool=false)
     mu = p.mu
     lambda = p.lambda
     funcs = p.funcs
     fitfunc = p.fitfunc
     perfect = p.targetfitness
 
-    pop = [random_chromosome(p) for _ in 1:(mu+lambda) ]
+    pop = [random_chromosome(p,use_cache) for _ in 1:(mu+lambda) ]
     fit = [fitness(c,goal,fitfunc) for c in pop ]
     perm = sortperm(fit, rev=true)
 

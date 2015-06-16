@@ -53,9 +53,11 @@ srand(1)
 
 (ch,gens) = mu_lambda(p, goal, maxgens)
 # The intention here is to compare ch with chromosome_half_adder(), but == does not work for comparison.
+#=
+# If uncommented, the printed chromosomes should be the same.
 print_chromosome(ch)
 ch_ha = chromosome_half_adder() 
-execute_chromosome(ch_ha)   # Sets active nodes to active
 print_chromosome(ch_ha)
+=#
 #@test ch == ch_ha
 

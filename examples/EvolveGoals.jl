@@ -23,17 +23,22 @@ macro otime(ex)
 
 # A high-level function to run function evolve_goals.
 # it sets the summary to the filename, and max_gens to default values
+# If use_cache is true, then each node caches its value.  This may be faster for multiple outputs.
 # Example:  run_evolve_goals("prun",2,13,10,20)   
 #   calls "evolve_goals" with numinputs=2, rseed=13,numlevels=10,runs_per_goal=20
 #   and the output going to the file: prun2_13_10_20.csv
-function run_evolve_goals(filename_prefix,numinputs,rseed,num_levels,runs_per_goal)
+# The default is to not use caching and to not keep track of active nodes.  
+# To use caching in the above example:  run_evolve_goals("prun",2,13,20,true)
+# If julia is started with mulitple processes, e. g.:  "julia -p 8", then these multiple processes will
+#   be used on different calls to function mu_lambda().
+function run_evolve_goals(filename_prefix,numinputs,rseed,num_levels,runs_per_goal, use_cache::Bool=false)
     directory = "out/"  # subdirectory for output CSV file
     filetype = ".csv"   # file extension
     underscore = "_"
     filename = "$directory$filename_prefix$numinputs$underscore$rseed$underscore$num_levels$underscore$runs_per_goal$filetype"
     ost = open(filename,"w")
     max_gens = numinputs == 2 ? 10000 : 50000
-    @otime ost = evolve_goals(ost,filename,numinputs,num_levels,runs_per_goal,max_gens,rseed)
+    @otime ost = evolve_goals(ost,filename,numinputs,num_levels,runs_per_goal,max_gens,rseed,use_cache)
     close(ost)
 end
 
@@ -49,27 +54,25 @@ end
     return Parameters(mu, lambda, mutrate, targetfitness, numinputs, numoutputs, numperlevel, numlevels, numlevelsback, funcs, fitfunc)
 end
 
-@everywhere function global_setup(numinputs,maxgens)
-    global num_inputs = numinputs
-    global max_gens = maxgens
-    num_inputs
-end
-
-# This is the function used by pmap to evolve each goal in goal_list
+# This is the function used by mape and pmap to evolve each goal in goal_list
 @everywhere function p_mu_lambda(g)
-    (ch,gens) = mu_lambda(p,g,max_gens)
-    n = ch.number_active_nodes
+    (ch,gens) = mu_lambda(p,g,max_gens,usecache)
+    if ch.has_cache
+        n = ch.cache.number_active_nodes
+    else
+        n = 0
+    end
     (g.truth_table,gens,n)
 end
 
-@everywhere function goal_list_setup(numinputs,num_levels,runs_per_goal,maxgens)
-    #println("goal list setup: proc:",myid(),"  numinputs:",numinputs)
+@everywhere function goal_list_setup(numinputs,num_levels,runs_per_goal,maxgens,use_cache)
     global mutrate = 0.05
     global mu = 1
     global lambda = 4
     global num_inputs = numinputs
     global max_gens = maxgens
     global num_goals = 2^2^numinputs
+    global usecache = use_cache
     global p = Params(mu,lambda,numinputs,1,1,num_levels,num_levels,mutrate,raman_funcs)
     global goal_list = [Goal(numinputs,(convert(BitString,div(i,runs_per_goal)),)) for i in 0:num_goals*runs_per_goal-1]
     length(goal_list)
@@ -98,15 +101,17 @@ end
 # For each goal, the output is the goal, the average number of generations, and the average number of active nodes.
 # Creates a CSV file with the parameter settings followed by the above described output for each run.
 # Also writes this information to stdout so that the user can see the progress made.
-function evolve_goals( outstream::IOStream, summary::String, num_inputs, num_levels, runs_per_goal, max_gens, rseed)
+function evolve_goals( outstream::IOStream, summary::String, 
+            num_inputs, num_levels, runs_per_goal, max_gens, rseed, use_cache::Bool=false)
     for proc in procs()
-        lg = remotecall_fetch(proc,goal_list_setup,num_inputs, num_levels, runs_per_goal, max_gens )
+        lg = remotecall_fetch(proc,goal_list_setup,num_inputs, num_levels, runs_per_goal, max_gens, use_cache )
     end
     println(outstream,summary)
     println(outstream,Dates.now())
     print(outstream,  "host:          ",readall(`hostname`))
     println(outstream,"num processes: ",length(procs()))
     print(outstream,readall(`julia -v`))
+    println(outstream,"use cache:     ",usecache)
     println(outstream,"num inputs:    ",p.numinputs)
     println(outstream,"num outputs:   ",p.numoutputs)
     println(outstream,"num per level: ",p.numperlevel)
