@@ -23,17 +23,18 @@ macro otime(ex)
 
 # A high-level function to run function evolve_goals.
 # it sets the summary to the filename, and max_gens to default values
+# If use_cache is true, then each node caches its value.  This may be faster for multiple outputs.
 # Example:  run_evolve_goals("prun",2,13,10,20)   
 #   calls "evolve_goals" with numinputs=2, rseed=13,numlevels=10,runs_per_goal=20
 #   and the output going to the file: prun2_13_10_20.csv
-function run_evolve_goals(filename_prefix,numinputs,rseed,num_levels,runs_per_goal)
+function run_evolve_goals(filename_prefix,numinputs,rseed,num_levels,runs_per_goal, use_cache::Bool=false)
     directory = "out/"  # subdirectory for output CSV file
     filetype = ".csv"   # file extension
     underscore = "_"
     filename = "$directory$filename_prefix$numinputs$underscore$rseed$underscore$num_levels$underscore$runs_per_goal$filetype"
     ost = open(filename,"w")
     max_gens = numinputs == 2 ? 10000 : 50000
-    @otime ost = evolve_goals(ost,filename,numinputs,num_levels,runs_per_goal,max_gens,rseed)
+    @otime ost = evolve_goals(ost,filename,numinputs,num_levels,runs_per_goal,max_gens,rseed,use_cache)
     close(ost)
 end
 
@@ -55,15 +56,15 @@ end
     num_inputs
 end
 
-# This is the function used by pmap to evolve each goal in goal_list
+# This is the function used by mape and pmap to evolve each goal in goal_list
 @everywhere function p_mu_lambda(g)
-    (ch,gens) = mu_lambda(p,g,max_gens)
-    n = 0
+    use_cache = true
+    (ch,gens) = mu_lambda(p,g,max_gens,usecache)
+    n = ch.cache.number_active_nodes
     (g.truth_table,gens,n)
 end
 
 @everywhere function goal_list_setup(numinputs,num_levels,runs_per_goal,maxgens)
-    #println("goal list setup: proc:",myid(),"  numinputs:",numinputs)
     global mutrate = 0.05
     global mu = 1
     global lambda = 4
@@ -98,7 +99,9 @@ end
 # For each goal, the output is the goal, the average number of generations, and the average number of active nodes.
 # Creates a CSV file with the parameter settings followed by the above described output for each run.
 # Also writes this information to stdout so that the user can see the progress made.
-function evolve_goals( outstream::IOStream, summary::String, num_inputs, num_levels, runs_per_goal, max_gens, rseed)
+function evolve_goals( outstream::IOStream, summary::String, 
+            num_inputs, num_levels, runs_per_goal, max_gens, rseed, use_cache::Bool=false)
+    global usecache = use_cache
     for proc in procs()
         lg = remotecall_fetch(proc,goal_list_setup,num_inputs, num_levels, runs_per_goal, max_gens )
     end

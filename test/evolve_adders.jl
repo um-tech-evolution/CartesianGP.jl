@@ -1,5 +1,5 @@
-include("../src/CGP.jl")
-include("../src/Mutate.jl")
+#include("../src/CGP.jl")
+#include("../src/Mutate.jl")
 
 using CGP
 using Base.Test
@@ -10,7 +10,7 @@ using Base.Test
 
 function parameters_half_adder()
     numperlevel = 1
-    numlevels = 2
+    numlevels = 7
     numlevelsback = numlevels
     numinputs = 2
     numoutputs = 2
@@ -65,29 +65,26 @@ end
 p = parameters_half_full_adder()
 g = goal_half_full_adder()
 n = 100000
-println("runing mu_lambda on half full adder")
+println("Runing mu_lambda on half full adder")
 r = mu_lambda(p, g, n)
-#println("trying evolve on half full adder")
-#r = evolve(p, g, n)
 
 println("fitness:",fitness(r[1], g),"  gens:",r[2])
 @assert fitness(r[1], g) == p.targetfitness
 @assert r[2] <= n
 print_chromosome(r[1])
 
-#=
 # Full adder
 
 function parameters_full_adder()
     numperlevel = 1
-    numlevels = 4
+    numlevels = 20
     numlevelsback = numlevels
     numinputs = 3
     numoutputs = 2
 
     mu = 1
     lambda = 4
-    mutrate = 0.1
+    mutrate = 0.05
     targetfitness = 1.0
     funcs = [AND, OR, XOR]
     fitfunc = hamming_max
@@ -101,10 +98,12 @@ end
 
 p = parameters_full_adder()
 g = goal_full_adder()
-n = 100000
+n = 1000000
+println("Runing mu_lambda on full adder")
+println("This may take a while!!")
 r = mu_lambda(p, g, n)
+println("fitness:",fitness(r[1], g),"  gens:",r[2])
 
 @assert fitness(r[1], g) == p.targetfitness
 @assert r[2] <= n
 print_chromosome(r[1])
-=#

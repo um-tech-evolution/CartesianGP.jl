@@ -28,7 +28,7 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
         error("more mutations than genes in function mutate")
     end
 
-    new_c = Chromosome(p)
+    new_c = Chromosome(p,old_c.has_cache)
 
     # Choose the genes that will be modified, and store their numbers in the array genes_to_mutate
     genes_to_mutate = Array(Int,num_mutations)
@@ -116,5 +116,6 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
         end
         gene_index += 1
     end # for i =
+    #println("mutate new_c.has_cache: ",new_c.has_cache)
     return new_c
 end

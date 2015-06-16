@@ -7,9 +7,11 @@ type ChromosomeCache
     inputs::Vector{InputNodeCache}
     interiors::Matrix{InteriorNodeCache}
     outputs::Vector{OutputNodeCache}
+    number_active_nodes::Int
 end
 
 function ChromosomeCache(p::Parameters, fill::Bool = false )
+    number_active_nodes = 0
     interiors = Array(InteriorNodeCache, p.numlevels, p.numperlevel)
     if fill
         inputs = [ InputNodeCache() for i in 1:p.numinputs ]
@@ -24,7 +26,7 @@ function ChromosomeCache(p::Parameters, fill::Bool = false )
         outputs = Array(OutputNodeCache, p.numoutputs)
     end
 
-    return ChromosomeCache(p, inputs, interiors, outputs)
+    return ChromosomeCache(p, inputs, interiors, outputs, number_active_nodes )
 end
 
 function getindex(c::ChromosomeCache, level::Integer, index::Integer)
