@@ -35,6 +35,7 @@ end
 # Prints the chromosome in a compact text format (on one line).  Active notes
 # are indicated with a "+" and inactive notes with a "*".  If active_only is
 # true, then only the active notes are shown.
+# TO DO:  A version that prints to a stream and a version that prints to a string
 function print_chromosome(c::Chromosome, active_only::Bool=false)
     has_cache_incoming = c.has_cache
     if ! c.has_cache
@@ -116,12 +117,12 @@ function random_node_position(p::Parameters, minlevel::Integer, maxlevel::Intege
     return (level, index)
 end
 
-function random_chromosome(p::Parameters, fill::Bool=false )
-    return random_chromosome(p, p.funcs,fill)
+function random_chromosome(p::Parameters, use_cache::Bool=false )
+    return random_chromosome(p, p.funcs,use_cache)
 end
 
-function random_chromosome(p::Parameters, funcs::Vector{Func}, fill::Bool=false)
-    c = Chromosome(p,fill)
+function random_chromosome(p::Parameters, funcs::Vector{Func}, use_cache::Bool=false)
+    c = Chromosome(p,use_cache)
 
     for index = 1:length(c.inputs)
         c.inputs[index] = InputNode(index)
