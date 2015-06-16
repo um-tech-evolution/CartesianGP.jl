@@ -116,6 +116,5 @@ function mutate(old_c::Chromosome, funcs::Vector{Func} )
         end
         gene_index += 1
     end # for i =
-    #println("mutate new_c.has_cache: ",new_c.has_cache)
     return new_c
 end

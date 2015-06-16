@@ -8,15 +8,18 @@ type Chromosome
     interiors::Matrix{InteriorNode}
     outputs::Vector{OutputNode}
     has_cache::Bool
-    cache::ChromosomeCache
+    cache::Union(Nothing,ChromosomeCache)  # If has_cache is false, then cache should be nothing.
 end
 
 function Chromosome(p::Parameters,use_cache::Bool=false)
     inputs = Array(InputNode, p.numinputs)
     interiors = Array(InteriorNode, p.numlevels, p.numperlevel)
     outputs = Array(OutputNode, p.numoutputs)
-    chc = ChromosomeCache(p,use_cache)
-
+    if use_cache
+        chc = ChromosomeCache(p,use_cache)
+    else
+        chc = nothing
+    end
     return Chromosome(p, inputs, interiors, outputs, use_cache, chc )
 end
 
