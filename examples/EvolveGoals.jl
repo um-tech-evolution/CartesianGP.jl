@@ -111,6 +111,7 @@ function evolve_goals( outstream::IOStream, summary::String,
     print(outstream,  "host:          ",readall(`hostname`))
     println(outstream,"num processes: ",length(procs()))
     print(outstream,readall(`julia -v`))
+    println(outstream,"use cache:     ",usecache)
     println(outstream,"num inputs:    ",p.numinputs)
     println(outstream,"num outputs:   ",p.numoutputs)
     println(outstream,"num per level: ",p.numperlevel)
