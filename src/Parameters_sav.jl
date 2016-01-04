@@ -3,8 +3,8 @@ export Parameters
 immutable Parameters
     mu::Integer
     lambda::Integer
-    mutrate::AbstractFloat
-    targetfitness::AbstractFloat
+    mutrate::FloatingPoint
+    targetfitness::FloatingPoint
 
     numinputs::Integer
     numoutputs::Integer

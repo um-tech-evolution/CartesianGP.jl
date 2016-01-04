@@ -51,6 +51,7 @@ goal = goal_half_adder()
 maxgens = 100
 srand(1)
 
+println("results from test/Evolution.jl")
 (ch,gens) = mu_lambda(p, goal, maxgens)
 # The intention here is to compare ch with chromosome_half_adder(), but == does not work for comparison.
 print_chromosome(ch)

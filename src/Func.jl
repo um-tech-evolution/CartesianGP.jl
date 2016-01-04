@@ -3,7 +3,7 @@ export Func, default_funcs, AND, OR, XOR, NAND, NOR, NOT, ZERO, ONE
 type Func
     func::Function
     arity::Integer
-    name::String
+    name::AbstractString
 end
 
 Func(f::Function, a::Integer) = Func(f, a, string(f))

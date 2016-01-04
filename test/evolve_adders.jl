@@ -1,6 +1,3 @@
-include("../src/CGP.jl")
-include("../src/Mutate.jl")
-
 using CGP
 using Base.Test
 
@@ -67,6 +64,7 @@ g = goal_half_full_adder()
 n = 100000
 println("runing mu_lambda on half full adder")
 r = mu_lambda(p, g, n)
+println("generations: ",r[2])
 #println("trying evolve on half full adder")
 #r = evolve(p, g, n)
 
@@ -75,7 +73,6 @@ println("fitness:",fitness(r[1], g),"  gens:",r[2])
 @assert r[2] <= n
 print_chromosome(r[1])
 
-#=
 # Full adder
 
 function parameters_full_adder()
@@ -101,10 +98,10 @@ end
 
 p = parameters_full_adder()
 g = goal_full_adder()
-n = 100000
+n = 1000000
+println("runing mu_lambda on full adder with n: ",n)
 r = mu_lambda(p, g, n)
-
+println("generations: ",r[2])
 @assert fitness(r[1], g) == p.targetfitness
 @assert r[2] <= n
 print_chromosome(r[1])
-=#

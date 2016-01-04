@@ -1,3 +1,3 @@
 export BitString
 
-typealias BitString Uint64
+typealias BitString UInt64
