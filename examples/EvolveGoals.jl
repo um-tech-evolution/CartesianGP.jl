@@ -97,11 +97,9 @@ function goal_list_setup(p,runs_per_goal,maxgens,number_random_goals=0)
     num_goals = 0
     if p.numinputs <= 3
         if number_random_goals == 0
-            #global num_goals
             num_goals = 2^2^p.numinputs   # for numinputs == 2 or 3, evolve all goals
             goal_list = [Goal(p.numinputs,(convert(BitString,div(i,runs_per_goal)),)) for i in 0:num_goals*runs_per_goal-1]
-        else # if number_random_goals != 0 then evolve randome goals
-            #global num_goals
+        else # if number_random_goals != 0 then evolve random goals
             num_goals = number_random_goals
             BitString_list = [convert(BitString,rand(0:2^2^p.numinputs-1)) for i in 1:num_goals]
             goal_list = [Goal(p.numinputs,(BitString_list[div(i,runs_per_goal)+1],)) for i in 0:num_goals*runs_per_goal-1]
@@ -109,6 +107,8 @@ function goal_list_setup(p,runs_per_goal,maxgens,number_random_goals=0)
     else
         if number_random_goals == 0
             num_goals = 8  # a default value that is computationally feasible for numinputs==4.
+        else
+            num_goals = number_random_goals
         end
         BitString_list = [convert(BitString,rand(0:2^2^p.numinputs-1)) for i in 1:num_goals]
         goal_list = [Goal(p.numinputs,(BitString_list[div(i,runs_per_goal)+1],)) for i in 0:num_goals*runs_per_goal-1]
@@ -162,8 +162,8 @@ end
 # TO DO:  Figure out how to display the information to stdout as the process runs.
 function evolve_goals( outstream::IOStream, summary::AbstractString, p, runs_per_goal, max_gens, number_random_goals, rseed)
     num_goals = 0
-    gl = Void
-    num_goals,gl = goal_list_setup(p, runs_per_goal, max_gens, number_random_goals )
+    goal_list = Void
+    num_goals,goal_list = goal_list_setup(p, runs_per_goal, max_gens, number_random_goals )
     println(outstream,summary)
     println(outstream,Dates.now())
     print(outstream,  "host:          ",readall(`hostname`))
@@ -189,18 +189,18 @@ function evolve_goals( outstream::IOStream, summary::AbstractString, p, runs_per
     if length(procs()) > 1
         #println("  goal_list: ",goal_list)
         #r = pmap(p_mu_lambda,goal_list)
-        r = pmap(p_mu_lambda,gl)
+        r = pmap(p_mu_lambda,goal_list)
     else
         #r = map(p_mu_lambda,goal_list)
-        r = map(p_mu_lambda,gl)
+        r = map(p_mu_lambda,goal_list)
     end
     average_array = averages(num_goals,runs_per_goal,max_gens,r)
     @printf("goal,  gens, active,  successful_runs\n")
     println(outstream,"goal, ave_gens, ave_active, succesful_runs") # header line for CSV
     for i in 1:num_goals
         sum_gens += average_array[i,1]
-        @printf(outstream,"%#x, %6.1f, %6.1f, %4.0f\n",gl[i*runs_per_goal].truth_table[1],average_array[i,1],average_array[i,2],average_array[i,3])
-        @printf("%#x, %6.1f, %6.1f, %4.0f\n",gl[i*runs_per_goal].truth_table[1],average_array[i,1],average_array[i,2],average_array[i,3])
+        @printf(outstream,"%#x, %6.1f, %6.1f, %4.0f\n",goal_list[i*runs_per_goal].truth_table[1],average_array[i,1],average_array[i,2],average_array[i,3])
+        @printf("%#x, %6.1f, %6.1f, %4.0f\n",goal_list[i*runs_per_goal].truth_table[1],average_array[i,1],average_array[i,2],average_array[i,3])
     end
     average_gens = convert(AbstractFloat,sum_gens)/num_goals
     println(outstream,"average gens: ",average_gens)
