@@ -1,9 +1,7 @@
 #Example command line to run this program on multiple processors:
 # julia -p 4 "run_evolve_goals.jl"
 
-@everywhere include("../src/CGP.jl")
-@everywhere using CGP
-@everywhere include("EvolveGoals0.jl")
+@everywhere include("EvolveGoals.jl")
 
 # Example runs.  Uncomment one of these lines
 #run_evolve_goals("prun",2,3,10,4)
