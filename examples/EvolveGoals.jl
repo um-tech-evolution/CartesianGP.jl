@@ -187,11 +187,8 @@ function evolve_goals( outstream::IOStream, summary::AbstractString, p, runs_per
     srand(rseed)
     sum_gens = 0
     if length(procs()) > 1
-        #println("  goal_list: ",goal_list)
-        #r = pmap(p_mu_lambda,goal_list)
         r = pmap(p_mu_lambda,goal_list)
     else
-        #r = map(p_mu_lambda,goal_list)
         r = map(p_mu_lambda,goal_list)
     end
     average_array = averages(num_goals,runs_per_goal,max_gens,r)
