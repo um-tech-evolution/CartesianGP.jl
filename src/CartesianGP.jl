@@ -1,4 +1,4 @@
-module CGP
+module CartesianGP
 
 include("BitString.jl")
 include("Func.jl")
