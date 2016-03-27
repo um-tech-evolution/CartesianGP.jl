@@ -1,6 +1,6 @@
 # CartesianGP.jl
 
-[![Build Status](https://travis-ci.org/glesica/CartesianGP.jl.svg?branch=master)](https://travis-ci.org/glesica/CartesianGP.jl)
+[![Build Status](https://travis-ci.org/um-tech-evolution/CartesianGP.jl.svg?branch=master)](https://travis-ci.org/um-tech-evolution/CartesianGP.jl)
 
 CartesianGP.jl is a library for using
 [Cartesian Genetic Programming](http://www.cartesiangp.co.uk/) in
