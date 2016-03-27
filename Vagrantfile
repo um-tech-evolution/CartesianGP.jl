@@ -33,7 +33,7 @@ Vagrant.configure(2) do |config|
         sudo add-apt-repository ppa:staticfloat/julia#{version} -y
         sudo apt-get update -qq -y
         sudo apt-get install julia -y
-        julia -e 'Pkg.init(); Pkg.clone("/vagrant", "CGP")'
+        julia -e 'Pkg.init(); Pkg.clone("/vagrant", "CartesianGP")'
       SHELL
 
     end

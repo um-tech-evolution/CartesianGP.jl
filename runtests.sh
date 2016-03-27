@@ -29,4 +29,4 @@ fi
 
 # Run the tests based on the code in the working directory, not just
 # what has been committed.
-cd "$DIR/test" && julia -e 'include("../src/CGP.jl"); include("runtests.jl");'
+cd "$DIR/test" && julia -e 'include("../src/CartesianGP.jl"); include("runtests.jl");'

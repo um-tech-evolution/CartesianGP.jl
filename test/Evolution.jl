@@ -1,4 +1,4 @@
-using CGP
+using CartesianGP
 using Base.Test
 
 # Test function mu_lambda() from Evolution.jl

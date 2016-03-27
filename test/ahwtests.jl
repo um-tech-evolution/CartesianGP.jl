@@ -7,7 +7,7 @@
 # With no command line argument, a different random chromosome will be constructed on each run.
 # Example run from the "src" subdirectory:  "julia ../test/ahwtests.jl 43"
 
-using CGP
+using CartesianGP
 using Base.Test
 
 # These are set in test/Chromosome.jl which is imported above

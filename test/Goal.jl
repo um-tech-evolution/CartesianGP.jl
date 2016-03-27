@@ -1,4 +1,4 @@
-using CGP
+using CartesianGP
 using Base.Test
 
 # Create some 2-input, 2-output goals, these should all be equivalent

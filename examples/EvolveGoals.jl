@@ -15,8 +15,8 @@
 # To evolve all 3-input goals, run run_evolve_goals() with the second argument equal to 3
 # To run using multiple processors, start Julia using the "-p" option, such as "julia -p 4"
 #   to start with 4 processors
-include("../src/CGP.jl")
-using CGP
+include("../src/CartesianGP.jl")
+using CartesianGP
 
 # macro similar to the @time macro except that it writes to the ost stream rather than the stdout stream.
 # This definition must precede its use below.

@@ -1,4 +1,4 @@
-using CGP
+using CartesianGP
 using Base.Test
 
 # TODO: Add correctness tests

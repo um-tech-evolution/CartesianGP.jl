@@ -1,4 +1,3 @@
-using CGP
 export mu_lambda
 
 # Executes mu-lambda evolution relative to goal starting with a random population of chromosomes
