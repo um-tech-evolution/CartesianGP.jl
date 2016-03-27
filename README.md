@@ -1,8 +1,8 @@
-# CGP.jl
+# CartesianGP.jl
 
-[![Build Status](https://travis-ci.org/glesica/CGP.jl.svg?branch=master)](https://travis-ci.org/glesica/CGP.jl)
+[![Build Status](https://travis-ci.org/glesica/CartesianGP.jl.svg?branch=master)](https://travis-ci.org/glesica/CartesianGP.jl)
 
-CGP.jl is a library for using
+CartesianGP.jl is a library for using
 [Cartesian Genetic Programming](http://www.cartesiangp.co.uk/) in
 Julia. It is being developed at the University of Montana in Missoula,
 MT for use in simulating the evolution of technology, though there is
@@ -22,7 +22,7 @@ If you have questions or comments, please contact one of the authors
 ## Examples
 
 The `examples/` directory contains (or will soon contain) some
-examples of using CGP.jl to evolve actual circuits. These can be used
+examples of using CartesianGP.jl to evolve actual circuits. These can be used
 as blueprints for implementing your own simulations. Right now the
 example code is pretty rough, but it will improve over time and will
 eventually include comments and documentation to help with getting
@@ -36,7 +36,7 @@ You can run the test suite against the code currenting in the working
 directory of the repository by running the `runtests.sh` script. If
 you want to test the library once you have installed it through
 Julia's package manager (using `Pkg.clone(...)` or otherwise) you can
-use `Pkg.test("CGP")` from within the Julia REPL. This will not,
+use `Pkg.test("CartesianGP")` from within the Julia REPL. This will not,
 however, test any modifications you have made to the code that have
 not been committed, use the script for that.
 
@@ -52,7 +52,7 @@ keeping Julia up-to-date can be a bit of a challenge.
 
 Additionally, this method protects the developer's system Julia
 packages, which is ideal for people who are both using and developing
-CGP.jl.
+CartesianGP.jl.
 
 Once
 [Vagrant is installed](http://docs.vagrantup.com/v2/getting-started/index.html),
