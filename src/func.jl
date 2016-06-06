@@ -1,4 +1,6 @@
-export Fun
+import Base.call
+
+export Fun, AND, OR, XOR, NAND, NOR, NOT, ZERO, ONE, DEFAULT_FUNCS
 
 immutable Fun{A}
   fun::Function
@@ -7,6 +9,8 @@ end
 
 Fun(f::Function, a::Integer, name::AbstractString) = Fun{a}(f, name)
 Fun(f::Function, a::Integer) = Fun(f, a, string(f))
+
+call{A}(f::Fun{A}, args::BitString...) = f.fun(args[1:A]...)
 
 const AND = Fun(&, 2)
 const OR = Fun(|, 2)

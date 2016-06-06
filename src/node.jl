@@ -1,3 +1,5 @@
+import Base.rand
+
 export Node, BasicNode
 
 # TODO: Input count should be fixed, where does it come from?
