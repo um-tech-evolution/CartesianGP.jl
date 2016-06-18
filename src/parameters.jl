@@ -12,7 +12,7 @@ immutable Parameters
     numlevels::Integer
     numlevelsback::Integer
 
-    funcs::Vector{Func}
+    funcs::Vector{Fun}
     fitfunc::Function
 end
 
