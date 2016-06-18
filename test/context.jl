@@ -1,4 +1,4 @@
-context("abstractgoal.jl") do
+context("context.jl") do
   context("stdctx") do
     g1 = BasicGoal(1, 1)
     g2 = BasicGoal(2, 1)

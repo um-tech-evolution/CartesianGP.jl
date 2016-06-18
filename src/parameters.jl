@@ -1,16 +1,16 @@
 export Parameters
 
 immutable Parameters
-    mu::Integer
-    lambda::Integer
+    mu::Int
+    lambda::Int
     mutrate::AbstractFloat
     targetfitness::AbstractFloat
 
-    numinputs::Integer
-    numoutputs::Integer
+    numinputs::Int
+    numoutputs::Int
 
-    numlevels::Integer
-    numlevelsback::Integer
+    numlevels::Int
+    numlevelsback::Int
 
     funcs::Vector{Fun}
     fitfunc::Function

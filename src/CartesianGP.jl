@@ -1,6 +1,7 @@
 module CartesianGP
 
 include("bitstring.jl")
+include("context.jl")
 include("fun.jl")
 include("parameters.jl")
 include("node.jl")

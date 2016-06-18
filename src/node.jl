@@ -27,12 +27,9 @@ BasicNode(f::FuncIndex, ns::NodeIndex...) = BasicNode(f, [n for n = ns])
 # Node interface implementation
 # -----------------------------
 
-active(node::BasicNode) = node.active
-active(node::BasicNode, a::Bool) = BasicNode(a, node.func, node.inputs)
+setactive(node::BasicNode, a::Bool) = BasicNode(a, node.func, node.inputs)
 
-func(node::BasicNode) = node.func
-func(node::BasicNode, f::FuncIndex) = BasicNode(node.active, f, node.inputs)
+setfunc(node::BasicNode, f::FuncIndex) = BasicNode(node.active, f, node.inputs)
 
-inputs(node::BasicNode) = node.inputs
-inputs(node::BasicNode, ns::NodeIndex...) = BasicNode(node.active, node.func, [n for n = ns])
+setinputs(node::BasicNode, ns::NodeIndex...) = BasicNode(node.active, node.func, [n for n = ns])
 
