@@ -1,4 +1,4 @@
-import Base.rand
+import Base.rand, Base.call
 
 export Node, BasicNode
 
@@ -7,29 +7,37 @@ export Node, BasicNode
 # TODO: Document the Node interface.
 
 typealias NodeIndex Int
-typealias FuncIndex Int
 
 @doc """A circuit node.
 """
 abstract Node
 
 @doc """A standard, immutable circuit node.
+
+  * `params` - a `Parameters` instance to control the node
+  * `active` - whether this node participates in its circuit (unused)
+  * `fun` - the function applied by this node
+  * `inputs` - indexes used as inputs to the node's function
 """
 immutable BasicNode <: Node
+  params::Parameters
   active::Bool
-  func::FuncIndex
+  fun::Fun
   inputs::Vector{NodeIndex}
 end
 
-BasicNode(f::FuncIndex, ns::NodeIndex...) = BasicNode(f, [n for n = ns])
+BasicNode(p::Parameters, f::Fun, ns::NodeIndex...) = BasicNode(p, f, [n for n = ns])
 
 # -----------------------------
 # Node interface implementation
 # -----------------------------
 
-setactive(node::BasicNode, a::Bool) = BasicNode(a, node.func, node.inputs)
+function call(node::BasicNode, predacessors::Vector{BitString})
+  invalues = predacessors[node.inputs]
+  return node.fun(invalues...)
+end
 
-setfunc(node::BasicNode, f::FuncIndex) = BasicNode(node.active, f, node.inputs)
-
-setinputs(node::BasicNode, ns::NodeIndex...) = BasicNode(node.active, node.func, [n for n = ns])
+setactive(node::BasicNode, a::Bool) = BasicNode(node.params, a, node.func, node.inputs)
+setfun(node::BasicNode, f::Fun) = BasicNode(node.params, node.active, f, node.inputs)
+setinputs(node::BasicNode, ns::NodeIndex...) = BasicNode(node.params, node.active, node.func, [n for n = ns])
 

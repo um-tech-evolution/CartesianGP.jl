@@ -1,5 +1,7 @@
 export stdctx
 
+typealias Context Vector{BitString}
+
 @doc """Returns a bit mask for one packed input.
 
 The logic here is fairly simple. If there are N inputs, then there are
